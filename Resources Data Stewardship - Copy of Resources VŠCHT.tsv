@@ -1,4 +1,4 @@
-Category	Title	Link to source	Knowledge level	Time needed 	Language	Keywords	Information
+Category,	Title,	Link to source,	Knowledge level,	Time needed, 	Language,	Keywords,	Information
 webpage	license chooser helper for CC	https://chooser-beta.creativecommons.org/	any level	few hours, self-paced	EN	licensing	use the helper to license data and documents
 course, video	EOSC CZ courses 	https://www.youtube.com/@EOSC.CzechRepublic 	beginner	few days, self-paced	CZ	RDM, DMP, licensing, other...	OpenScience, FAIR, data management, ELN
 webpage, course	EOSC-Synergy: Data Steward Training	https://moodle.learn.eosc-synergy.eu/course/view.php?id=132 	beginner	few weeks, self-paced	EN	RDM, DMP, GAČR, licensing, other..., DataSteward Training, FAIR	The aim of this course is to support the development of RDM skills among the staff of higher education institutions and other research organizations.  -------------------------------Cílem tohoto kurzu je podpořit rozvoj dovedností v oblasti RDM u pracovníků vysokoškolských institucí a dalších výzkumných organizací. 
@@ -34,3 +34,4 @@ practical guides, article	Eleven quick tips for properly handling tabular data	h
 course	RDM Kit elixir	https://rdmkit.elixir-europe.org/all_training_resources	any level	self-paced	EN	DataSteward Training, RDM	
 
 		https://tess.elixir-europe.org/elearning_materials					
+
