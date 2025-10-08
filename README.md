@@ -7,6 +7,7 @@ Available materials for Data Stewards in CZ and internationally.
 
 ## Contributors
 
-- ### Georgia Koutentaki, MEng.  OrcID: <a href='https://orcid.org/0000-0002-8099-9963'> 0000-0002-8099-9963
-- ### Martin Schätz, PhD.  OrcID: <a href='https://orcid.org/0000-0003-0931-4017'> 0000-0003-0931-4017
-- ### Jan Vališ, Ing. OrcID: <a href='https://orcid.org/0000-0003-0349-6868'> 0000-0003-0349-6868
+- ### Georgia Koutentaki, MEng. (ČVUT, VŠCHT)  OrcID: <a href='https://orcid.org/0000-0002-8099-9963'> 0000-0002-8099-9963
+- ### Martin Schätz, PhD. (VŠCHT, UK, NTK) OrcID: <a href='https://orcid.org/0000-0003-0931-4017'> 0000-0003-0931-4017
+- ### Jan Vališ, Ing. (VŠCHT, NTK) OrcID: <a href='https://orcid.org/0000-0003-0349-6868'> 0000-0003-0349-6868
+- ### Hana Thürlová (VŠCHT) . OrcID: <a href='https://orcid.org/0000-0003-0349-6868'> 0000-0003-0349-6868
