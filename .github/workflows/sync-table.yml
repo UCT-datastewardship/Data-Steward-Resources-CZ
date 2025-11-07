@@ -98,21 +98,23 @@ jobs:
               lines.append("|" + "|".join("---" for _ in headers) + "|")
           
               # 🔹 Loop through data rows
+              BOLD_ROWS = [2, 4]  # <-- bold 3rd and 5th data rows (0-based index)
+
               for i, r in enumerate(data):
                   padded = r + [""] * (len(headers) - len(r))
                   colored = [
                       render_cell(c.replace("\n", "<br>"), headers[j] if j < len(headers) else "")
                       for j, c in enumerate(padded)
                   ]
-          
-                  # Bold the first two rows
-                  if i < 2:
+              
+                  # Bold only the rows you specify
+                  if i in BOLD_ROWS:
                       colored = [f"**{c}**" for c in colored]
+              
+                  lines.append("|" + "|".join(colored) + "|")       
+                  
+               table = "\n".join(lines)
           
-                  lines.append("|" + "|".join(colored) + "|")
-          
-              table = "\n".join(lines)          
-      
           # Replace between markers
           pre, rest = text.split(START, 1)
           _, post = rest.split(END, 1)
