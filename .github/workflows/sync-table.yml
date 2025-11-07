@@ -38,6 +38,19 @@ jobs:
           START = "<!-- AUTO-TABLE:START -->"
           END   = "<!-- AUTO-TABLE:END -->"
 
+          # Columns where we want "Yes" → header name, "No" → blank
+          TARGET_HEADERS = {
+              h.lower(): h  # map lowercase → canonical header text
+              for h in [
+                  "DataSteward Training",
+                  "open science",
+                  "data",
+                  "database",
+                  "repositories",
+                  "licensing",
+              ]
+          }
+
           COLOR_MAP = {
               "Categories": {
                   "webpage": "#8250df",
@@ -56,15 +69,29 @@ jobs:
               return f"![{text}](https://img.shields.io/badge/{t}-{c}?style=flat)"
 
           def render_cell(value: str, header: str) -> str:
+              """Render a single cell, with special handling for TARGET_HEADERS."""
               if value is None:
                   return " "
               v = value.strip()
               if not v:
                   return " "
-              h_key = (header or "").strip()
+
+              h_key_raw = (header or "").strip()
+              h_key = h_key_raw.lower()
+
+              # If this column is one of the six target headers:
+              if h_key in TARGET_HEADERS:
+                  if v.lower() == "yes":
+                      # Show the column title instead of "Yes"
+                      return TARGET_HEADERS[h_key]
+                  if v.lower() == "no":
+                      # Show blank instead of "No"
+                      return " "
+
+              # Otherwise, fall back to badges/color mapping if configured
               v_key = v.lower()
-              if h_key in COLOR_MAP:
-                  cmap = COLOR_MAP[h_key]
+              if h_key_raw in COLOR_MAP:
+                  cmap = COLOR_MAP[h_key_raw]
                   if v_key in cmap:
                       return badge(v, cmap[v_key])
               return v
@@ -89,6 +116,8 @@ jobs:
               rows = list(csv.reader(f, dialect))
 
           # Build Markdown table with proper header separator
+          per_row_summary_md = ""  # will append a per-row "Yes → headers" summary table
+
           if not rows:
               table = "_No data_"
           else:
@@ -107,12 +136,12 @@ jobs:
                   max_cols = max(len(r) for r in rows)
                   def mkrow(cells):
                       return "|" + "|".join((c if c.strip() else " ") for c in cells) + "|"
-          
-                  # Use row 0 as headers for badge mapping of later rows
+
+                  # Use row 0 as headers for mapping of later rows
                   headers_row = rows[0] + [""] * (max_cols - len(rows[0]))
-          
+
                   lines = []
-          
+
                   # ---- Header (row 0) ----
                   hdr_cells = [
                       render_cell((rows[0][j] if j < len(rows[0]) else "").replace("\n", "<br>"),
@@ -122,10 +151,10 @@ jobs:
                   # Bold header row
                   hdr_cells = [f"**{c}**" if c.strip() else c for c in hdr_cells]
                   lines.append(mkrow(hdr_cells))
-          
+
                   # ---- Mandatory Markdown header separator ----
                   lines.append("|" + "|".join("---" for _ in range(max_cols)) + "|")
-          
+
                   # ---- Row 1 (second CSV row) – bold as requested ----
                   if len(rows) > 1:
                       r = rows[1]
@@ -137,7 +166,7 @@ jobs:
                       ]
                       cells = [f"**{c}**" if c.strip() else c for c in cells]
                       lines.append(mkrow(cells))
-          
+
                   # ---- Remaining data rows ----
                   for r in rows[2:]:
                       padded = r + [""] * (max_cols - len(r))
@@ -147,17 +176,44 @@ jobs:
                           for j in range(max_cols)
                       ]
                       lines.append(mkrow(cells))
-          
+
                   table = "\n".join(lines)
+
+                  # ---------- Per-row compact summary (e.g., "DataSteward Training, data, licensing") ----------
+                  # Find indices of the six target columns in the header
+                  header_index = { (headers_row[i] or "").strip().lower(): i for i in range(len(headers_row)) }
+                  target_indices = [header_index[h] for h in TARGET_HEADERS.keys() if h in header_index]
+
+                  if target_indices:
+                      # Build a 2-column Markdown table: Row | Columns with "Yes"
+                      summary_lines = [
+                          "",
+                          "#### Per-row selected topics",
+                          "",
+                          "| Row | Columns with “Yes” |",
+                          "|-----|---------------------|",
+                      ]
+                      # Iterate data rows (starting from row index 1)
+                      for ridx, r in enumerate(rows[1:], start=1):
+                          padded = r + [""] * (max_cols - len(r))
+                          yes_labels = []
+                          for h_lc, h_canonical in TARGET_HEADERS.items():
+                              if h_lc in header_index:
+                                  j = header_index[h_lc]
+                                  v = (padded[j] or "").strip().lower()
+                                  if v == "yes":
+                                      yes_labels.append(h_canonical)
+                          summary_lines.append(f"| {ridx} | {' , '.join(yes_labels) if yes_labels else '—'} |")
+                      per_row_summary_md = "\n".join(summary_lines)
 
           # Replace between markers
           pre, rest = text.split(START, 1)
           _, post = rest.split(END, 1)
-          updated = f"{pre}{START}\n\n{table}\n\n{END}{post}"
+          updated = f"{pre}{START}\n\n{table}{per_row_summary_md}\n\n{END}{post}"
 
           if updated != text:
               OUT.write_text(updated, encoding="utf-8")
-              print("✅ Updated resources-table.md (bolded rows 1–2, BOM-safe)")
+              print("✅ Updated resources-table.md (Yes→header, per-row summary, BOM-safe)")
           else:
               print("No changes to resources-table.md")
           PY
