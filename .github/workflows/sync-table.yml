@@ -24,103 +24,103 @@ jobs:
           echo "---- data ----"; ls -la data || true
           echo "---- output ----"; ls -la | sed -n '1,200p'
 
-      - name: Build resources-table.md from CSV (inline Python)
-        run: |
-          python3 - <<'PY'
-          import csv
-          from pathlib import Path
-          from urllib.parse import quote
+            - name: Build resources-table.md from CSV (inline Python)
+            run: |
+              python3 - <<'PY'
+              import csv
+              from pathlib import Path
+              from urllib.parse import quote
+    
+              CSV_PATH = Path("data/data.csv")
+              OUT = Path("resources-table.md")
+              START = "<!-- AUTO-TABLE:START -->"
+              END   = "<!-- AUTO-TABLE:END -->"
+    
+              COLOR_MAP = {
+                  "Categories": {
+                      "webpage": "#8250df",
+                      "article": "#0969da",
+                      "practical guides": "#f97316",
+                      "document": "#ec4899",
+                      "course": "#22c55e",
+                      "video": "#eab308",
+                      "meeting": "#8B0000",
+                  },
+              }
+    
+              def badge(text: str, color: str) -> str:
+                  t = quote(text.replace("-", "–"))
+                  c = color.lstrip("#")
+                  return f"![{text}](https://img.shields.io/badge/{t}-{c}?style=flat)"
+    
+              def render_cell(value: str, header: str) -> str:
+                  if value is None:
+                      return " "
+                  v = value.strip()
+                  if not v:
+                      return " "
+                  h_key = (header or "").strip()
+                  v_key = v.lower()
+                  if h_key in COLOR_MAP:
+                      cmap = COLOR_MAP[h_key]
+                      if v_key in cmap:
+                          return badge(v, cmap[v_key])
+                  return v
+    
+              # Ensure output file & markers exist
+              if not OUT.exists():
+                  OUT.write_text("# 📊 Resources Table\n\n" + START + "\n" + END + "\n", encoding="utf-8")
+              text = OUT.read_text(encoding="utf-8")
+              if START not in text or END not in text:
+                  raise SystemExit("Markers not found in resources-table.md")
+    
+              # Read CSV (use utf-8-sig to drop BOM if present)
+              if not CSV_PATH.exists():
+                  raise SystemExit(f"CSV not found: {CSV_PATH.resolve()}")
+              with CSV_PATH.open("r", encoding="utf-8-sig", newline="") as f:
+                  sample = f.read(4096)
+                  f.seek(0)
+                  try:
+                      dialect = csv.Sniffer().sniff(sample, delimiters=[",",";","\t","|"])
+                  except csv.Error:
+                      dialect = csv.excel
+                  rows = list(csv.reader(f, dialect))
+    
+              # Build Markdown table
+              if not rows:
+                  table = "_No data_"
+              else:
+                  BOLD_ROWS = [0, 1]  # bold the first two CSV rows
+                  max_cols = max(len(r) for r in rows)
+    
+                  # Use first row as headers for coloring logic (even though we also bold it)
+                  headers_row = rows[0] + [""] * (max_cols - len(rows[0]))
+    
+                  lines = []
+                  for i, r in enumerate(rows):
+                      padded = r + [""] * (max_cols - len(r))
+                      colored = [
+                          render_cell(padded[j].replace("\n", "<br>"), headers_row[j] if j < len(headers_row) else "")
+                          for j in range(max_cols)
+                      ]
+                      if i in BOLD_ROWS:
+                          colored = [f"**{c}**" if c.strip() else c for c in colored]
+                      lines.append("|" + "|".join(colored) + "|")
+    
+                  table = "\n".join(lines)
+    
+              # Replace content between markers
+              pre, rest = text.split(START, 1)
+              _, post = rest.split(END, 1)
+              updated = f"{pre}{START}\n\n{table}\n\n{END}{post}"
+    
+              if updated != text:
+                  OUT.write_text(updated, encoding="utf-8")
+                  print("✅ Updated resources-table.md (bolded rows 1–2, BOM-safe)")
+              else:
+                  print("No changes to resources-table.md")
+              PY
 
-          CSV_PATH = Path("data/data.csv")
-          OUT = Path("resources-table.md")
-          START = "<!-- AUTO-TABLE:START -->"
-          END   = "<!-- AUTO-TABLE:END -->"
-
-          COLOR_MAP = {
-              "Categories": {
-                  "webpage": "#8250df",
-                  "article": "#0969da",
-                  "practical guides": "#f97316",
-                  "document": "#ec4899",
-                  "course": "#22c55e",
-                  "video": "#eab308",
-                  "meeting": "#8B0000",
-              },
-          }
-
-          def badge(text: str, color: str) -> str:
-              t = quote(text.replace("-", "–"))
-              c = color.lstrip("#")
-              return f"![{text}](https://img.shields.io/badge/{t}-{c}?style=flat)"
-
-          def render_cell(value: str, header: str) -> str:
-              if value is None:
-                  return " "
-              v = value.strip()
-              if not v:
-                  return " "
-              h_key = header.strip()
-              v_key = v.lower()
-              if h_key in COLOR_MAP:
-                  cmap = COLOR_MAP[h_key]
-                  if v_key in cmap:
-                      return badge(v, cmap[v_key])
-              return v
-
-          # Ensure output file & markers exist
-          if not OUT.exists():
-              OUT.write_text("# 📊 Resources Table\n\n" + START + "\n" + END + "\n", encoding="utf-8")
-          text = OUT.read_text(encoding="utf-8")
-          if START not in text or END not in text:
-              raise SystemExit("Markers not found in resources-table.md")
-
-          # Read CSV (auto-detect delimiters)
-          if not CSV_PATH.exists():
-              raise SystemExit(f"CSV not found: {CSV_PATH.resolve()}")
-          with CSV_PATH.open("r", encoding="utf-8", newline="") as f:
-              sample = f.read(4096)
-              f.seek(0)
-              try:
-                  dialect = csv.Sniffer().sniff(sample, delimiters=[",",";","\t","|"])
-              except csv.Error:
-                  dialect = csv.excel
-              rows = list(csv.reader(f, dialect))
-
-          # Build Markdown table with colored badges
-          if not rows:
-              table = "_No data_"
-          else:
-              # Bold the first two CSV rows
-              BOLD_ROWS = [0, 1]
-
-              lines = []
-              for i, r in enumerate(rows):
-                  # Pad rows to match the longest one
-                  padded = r + [""] * (max(len(x) for x in rows) - len(r))
-                  colored = [
-                      render_cell(c.replace("\n", "<br>"), "")
-                      for c in padded
-                  ]
-
-                  # Bold the first two rows
-                  if i in BOLD_ROWS:
-                      colored = [f"**{c}**" if c.strip() else c for c in colored]
-
-                  lines.append("|" + "|".join(colored) + "|")
-
-              table = "\n".join(lines)
-
-          # Replace content between markers
-          pre, rest = text.split(START, 1)
-          _, post = rest.split(END, 1)
-          updated = f"{pre}{START}\n\n{table}\n\n{END}{post}"
-
-          if updated != text:
-              OUT.write_text(updated, encoding="utf-8")
-              print("✅ Updated resources-table.md with colored badges")
-          else:
-              print("No changes to resources-table.md")
-          PY
 
       - name: Commit and push if changed
         run: |
