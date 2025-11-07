@@ -7,7 +7,7 @@ on:
   workflow_dispatch: {}  # lets you run it manually from the Actions tab
 
 permissions:
-  contents: write  # needed so the action can push the updated README
+  contents: write  # needed so the action can push the updated OUTPUT
 
 jobs:
   build-table:
@@ -21,7 +21,7 @@ jobs:
         with:
           python-version: "3.x"
 
-      - name: Build Markdown table in README
+      - name: Build Markdown table in OUTPUT
         run: |
           python - <<'PY'
           import runpy; runpy.run_path("scripts/csv_to_md.py")
