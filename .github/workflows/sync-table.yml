@@ -88,28 +88,67 @@ jobs:
                   dialect = csv.excel
               rows = list(csv.reader(f, dialect))
 
-          # Build Markdown: bold first TWO CSV rows (0 and 1)
+          # Build Markdown table with proper header separator
           if not rows:
               table = "_No data_"
           else:
-              BOLD_ROWS = [0, 1]
-              max_cols = max(len(r) for r in rows)
+              # Optional: trim trailing empty columns across all rows
+              def last_non_empty_idx(r):
+                  for k in range(len(r) - 1, -1, -1):
+                      if (r[k] or "").strip():
+                          return k
+                  return -1
+              rightmost = max(last_non_empty_idx(r) for r in rows)
+              if rightmost == -1:
+                  table = "_No data_"
+              else:
+                  rows = [r[: rightmost + 1] for r in rows]
 
-              # Use row 0 as "headers" for color mapping of subsequent cells (even though we also bold it)
-              headers_row = rows[0] + [""] * (max_cols - len(rows[0]))
-
-              lines = []
-              for i, r in enumerate(rows):
-                  padded = r + [""] * (max_cols - len(r))
-                  colored = [
-                      render_cell(padded[j].replace("\n", "<br>"), headers_row[j] if j < len(headers_row) else "")
+                  max_cols = max(len(r) for r in rows)
+                  def mkrow(cells):
+                      return "|" + "|".join((c if c.strip() else " ") for c in cells) + "|"
+          
+                  # Use row 0 as headers for badge mapping of later rows
+                  headers_row = rows[0] + [""] * (max_cols - len(rows[0]))
+          
+                  lines = []
+          
+                  # ---- Header (row 0) ----
+                  hdr_cells = [
+                      render_cell((rows[0][j] if j < len(rows[0]) else "").replace("\n", "<br>"),
+                                  headers_row[j] if j < len(headers_row) else "")
                       for j in range(max_cols)
                   ]
-                  if i in BOLD_ROWS:
-                      colored = [f"**{c}**" if c.strip() else c for c in colored]
-                  lines.append("|" + "|".join(colored) + "|")
-
-              table = "\n".join(lines)
+                  # Bold header row
+                  hdr_cells = [f"**{c}**" if c.strip() else c for c in hdr_cells]
+                  lines.append(mkrow(hdr_cells))
+          
+                  # ---- Mandatory Markdown header separator ----
+                  lines.append("|" + "|".join("---" for _ in range(max_cols)) + "|")
+          
+                  # ---- Row 1 (second CSV row) – bold as requested ----
+                  if len(rows) > 1:
+                      r = rows[1]
+                      padded = r + [""] * (max_cols - len(r))
+                      cells = [
+                          render_cell(padded[j].replace("\n", "<br>"),
+                                      headers_row[j] if j < len(headers_row) else "")
+                          for j in range(max_cols)
+                      ]
+                      cells = [f"**{c}**" if c.strip() else c for c in cells]
+                      lines.append(mkrow(cells))
+          
+                  # ---- Remaining data rows ----
+                  for r in rows[2:]:
+                      padded = r + [""] * (max_cols - len(r))
+                      cells = [
+                          render_cell(padded[j].replace("\n", "<br>"),
+                                      headers_row[j] if j < len(headers_row) else "")
+                          for j in range(max_cols)
+                      ]
+                      lines.append(mkrow(cells))
+          
+                  table = "\n".join(lines)
 
           # Replace between markers
           pre, rest = text.split(START, 1)
