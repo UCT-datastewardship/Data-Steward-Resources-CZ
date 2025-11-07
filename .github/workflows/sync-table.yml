@@ -7,7 +7,7 @@ on:
   workflow_dispatch: {}  # lets you run it manually from the Actions tab
 
 permissions:
-  contents: write  # needed so the action can push the updated OUTPUT
+  contents: write  # needed so the action can push the updated OUTPUT_FILE
 
 jobs:
   build-table:
@@ -32,7 +32,7 @@ jobs:
         with:
           python-version: "3.x"
 
-      - name: Build Markdown table in OUTPUT
+      - name: Build Markdown table in OUTPUT_FILE
         run: |
           python - <<'PY'
           import runpy; runpy.run_path("scripts/csv_to_md.py")
