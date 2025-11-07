@@ -15,6 +15,17 @@ jobs:
     steps:
       - name: Check out repo
         uses: actions/checkout@v4
+        
+      - name: Debug paths
+        run: |
+         pwd
+         ls -la
+         echo "---- scripts ----"
+         ls -la scripts || true
+         echo "---- data ----"
+         ls -la data || true
+         echo "---- output file ----"
+         [ -f resources-table.md ] && echo "exists" || echo "missing"
 
       - name: Set up Python
         uses: actions/setup-python@v5
