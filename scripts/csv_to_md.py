@@ -4,7 +4,7 @@ from pathlib import Path
 import sys
 
 CSV_PATH = Path(".github/workflows/Resources Data Stewardship - git.csv")       # change if your CSV path differs
-README = Path("README.md")
+README = Path("resources-table.md")
 START = "<!-- AUTO-TABLE:START -->"
 END = "<!-- AUTO-TABLE:END -->"
 
