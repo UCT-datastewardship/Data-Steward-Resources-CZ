@@ -1,33 +1,45 @@
-name: Monthly Google Sheet Sync
+name: Monthly CSV → Markdown table
 
 on:
   schedule:
-    # Run at 00:00 UTC on the 1st of every month
-    - cron: "0 0 1 * *"
-  workflow_dispatch: # allow manual run too
+    # Runs at 07:00 UTC on the 1st of every month
+    - cron: "0 7 1 * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
 
 jobs:
-  sync:
+  build-table:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      # (Optional) If your CSV is hosted elsewhere, fetch it here.
+      # - name: Download CSV
+      #   run: |
+      #     curl -L "https://example.com/data.csv" -o data/data.csv
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: "3.x"
 
-      - name: Install dependencies
-        run: pip install pandas requests tabulate
-
-      - name: Run sync script
-        run: python sync_sheet.py
-
-      - name: Commit changes
+      - name: Build Markdown table in README
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add .
-          git commit -m "Monthly update from Google Sheets" || echo "No changes to commit"
-          git push
+            python - <<'PY'
+            import runpy; runpy.run_path("scripts/csv_to_md.py")
+            PY
+
+      - name: Commit and push if changed
+        run: |
+          if [[ -n "$(git status --porcelain)" ]]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git commit -am "Auto-update table from CSV ($(date -u +%F))"
+            git push
+          else
+            echo "No changes to commit."
+          fi
+
