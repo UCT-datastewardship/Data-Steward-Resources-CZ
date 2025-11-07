@@ -46,6 +46,7 @@ jobs:
                   "document": "#ec4899",         # pink
                   "course": "#22c55e",           # light green
                   "video": "#eab308",            # yellow
+                  "meeting": "#8B0000",          # dark red
               },
           }
           # ===========================
