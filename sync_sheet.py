@@ -1,40 +1,44 @@
-# sync_sheet.py
-import os
-import sys
-import io
-import requests
-import pandas as pd
+name: Monthly CSV → Markdown table
 
-# Either put the full CSV export URL in SHEET_CSV_URL
-# or just set YOUR_SHEET_ID below.
-SHEET_CSV_URL = os.getenv(
-    "SHEET_CSV_URL",
-    "https://github.com/UCT-datastewardship/Data-Steward-Resources-CZ/blob/main/.github/workflows/Resources%20Data%20Stewardship%20-%20git.csv"
-)
+on:
+  schedule:
+    # Runs at 07:00 UTC on the 1st of every month
+    - cron: "0 7 1 * *"
+  workflow_dispatch: {}
 
-OUTPUT_CSV = os.getenv("OUTPUT_CSV", "data.csv")
-OUTPUT_MD  = os.getenv("OUTPUT_MD",  "TABLE.md")
+permissions:
+  contents: write
 
-def main():
-    try:
-        r = requests.get(SHEET_CSV_URL, timeout=30)
-        r.raise_for_status()
-    except Exception as e:
-        print(f"Failed to download sheet CSV: {e}", file=sys.stderr)
-        sys.exit(1)
+jobs:
+  build-table:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
 
-    df = pd.read_csv(io.StringIO(r.text))
-    df.to_csv(OUTPUT_CSV, index=False)
+      # (Optional) If your CSV is hosted elsewhere, fetch it here.
+      # - name: Download CSV
+      #   run: |
+      #     curl -L "https://example.com/data.csv" -o data/data.csv
 
-    # Markdown export (requires 'tabulate', which the workflow installs)
-    try:
-        import tabulate  # noqa: F401
-        md = df.to_markdown(index=False)
-        with open(OUTPUT_MD, "w", encoding="utf-8") as f:
-            f.write(md + "\n")
-        print(f"Wrote {OUTPUT_CSV} and {OUTPUT_MD}")
-    except Exception as e:
-        print(f"Wrote {OUTPUT_CSV}. Skipped Markdown export: {e}", file=sys.stderr)
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
 
-if __name__ == "__main__":
-    main()
+      - name: Build Markdown table in README
+        run: |
+            python - <<'PY'
+            import runpy; runpy.run_path("scripts/csv_to_md.py")
+            PY
+
+      - name: Commit and push if changed
+        run: |
+          if [[ -n "$(git status --porcelain)" ]]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git commit -am "Auto-update table from CSV ($(date -u +%F))"
+            git push
+          else
+            echo "No changes to commit."
+          fi
