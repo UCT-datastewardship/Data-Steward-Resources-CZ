@@ -9,7 +9,7 @@ import pandas as pd
 # or just set YOUR_SHEET_ID below.
 SHEET_CSV_URL = os.getenv(
     "SHEET_CSV_URL",
-    "https://docs.google.com/spreadsheets/d/e/2PACX-1vQDeitSl4vNEHlpzWkFBI_NEdskybm7UVtNpK9NVYNzB66V6XuH435QLcu0mAX2fwzLP3OKQCgjux6h/pub?gid=621672034&single=true&output=csv"
+    "https://github.com/UCT-datastewardship/Data-Steward-Resources-CZ/blob/main/.github/workflows/Resources%20Data%20Stewardship%20-%20git.csv"
 )
 
 OUTPUT_CSV = os.getenv("OUTPUT_CSV", "data.csv")
