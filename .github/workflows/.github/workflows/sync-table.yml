@@ -1,0 +1,39 @@
+name: Monthly CSV → Markdown table
+
+on:
+  schedule:
+    # Runs at 07:00 UTC on the 1st of every month
+    - cron: "0 7 1 * *"
+  workflow_dispatch: {}  # lets you run it manually from the Actions tab
+
+permissions:
+  contents: write  # needed so the action can push the updated README
+
+jobs:
+  build-table:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Build Markdown table in README
+        run: |
+          python - <<'PY'
+          import runpy; runpy.run_path("scripts/csv_to_md.py")
+          PY
+
+      - name: Commit and push if changed
+        run: |
+          if [[ -n "$(git status --porcelain)" ]]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git commit -am "Auto-update table from CSV ($(date -u +%F))"
+            git push
+          else
+            echo "No changes to commit."
+          fi
