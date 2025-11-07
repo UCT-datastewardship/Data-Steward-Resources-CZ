@@ -1,6 +1,6 @@
 <!-- AUTO-TABLE:START -->
 
-|**Title**|**Link to source**| | |**Categories**|**Categories**|**Categories**|**Categories**| | |**Knowledge level**| | |**Time needed**| | |**Language**| | |**Keywords**| | | | | | | | | | | | | | |**Information**|
+|**Title**|**Link to source**| | |**Categories**|**Categories**|**Categories**|**Categories**| | |**Knowledge level**| | |**Time needed **| | |**Language**| | |**Keywords**| | | | | | | | | | | | | | |**Information**|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | | | | | | | | | | | | | | | | | | | |**DataSteward Training**|**open science**|**data**|**database**|**repositories**|**licensing**|**good practices**|**bad practices**|**RDM**|**DMP**|**FAIR**|**HE**|**GAČR**|**other**| | |
 |license chooser helper for CC|https://chooser-beta.creativecommons.org/| | |![webpage](https://img.shields.io/badge/webpage-8250df?style=flat)| | | | | |any level| | |few hours|self-paced| |EN| | | | | | | |Yes| | | | | | | | | |Tool for licensing research data and documents|
