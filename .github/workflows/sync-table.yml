@@ -31,31 +31,29 @@ jobs:
           import csv
           from pathlib import Path
           from urllib.parse import quote
-      
-          CSV_PATH = Path("data/data.csv")          # <-- change if your CSV lives elsewhere
+
+          CSV_PATH = Path("data/data.csv")
           OUT = Path("resources-table.md")
           START = "<!-- AUTO-TABLE:START -->"
           END   = "<!-- AUTO-TABLE:END -->"
-      
-          # ====== COLOR CONFIG ======
+
           COLOR_MAP = {
               "Categories": {
-                  "webpage": "#8250df",          # purple
-                  "article": "#0969da",          # blue
-                  "practical guides": "#f97316", # orange
-                  "document": "#ec4899",         # pink
-                  "course": "#22c55e",           # light green
-                  "video": "#eab308",            # yellow
-                  "meeting": "#8B0000",          # dark red
+                  "webpage": "#8250df",
+                  "article": "#0969da",
+                  "practical guides": "#f97316",
+                  "document": "#ec4899",
+                  "course": "#22c55e",
+                  "video": "#eab308",
+                  "meeting": "#8B0000",
               },
           }
-          # ===========================
-      
+
           def badge(text: str, color: str) -> str:
               t = quote(text.replace("-", "–"))
               c = color.lstrip("#")
               return f"![{text}](https://img.shields.io/badge/{t}-{c}?style=flat)"
-      
+
           def render_cell(value: str, header: str) -> str:
               if value is None:
                   return " "
@@ -69,15 +67,13 @@ jobs:
                   if v_key in cmap:
                       return badge(v, cmap[v_key])
               return v
-      
-          # Ensure output file & markers exist
+
           if not OUT.exists():
               OUT.write_text("# 📊 Resources Table\n\n" + START + "\n" + END + "\n", encoding="utf-8")
           text = OUT.read_text(encoding="utf-8")
           if START not in text or END not in text:
               raise SystemExit("Markers not found in resources-table.md")
-      
-          # Read CSV (auto-detect common delimiters)
+
           if not CSV_PATH.exists():
               raise SystemExit(f"CSV not found: {CSV_PATH.resolve()}")
           with CSV_PATH.open("r", encoding="utf-8", newline="") as f:
@@ -87,8 +83,7 @@ jobs:
               except csv.Error:
                   dialect = csv.excel
               rows = list(csv.reader(f, dialect))
-    
-          # Build Markdown table with colored badges
+
           if not rows:
               table = "_No data_"
           else:
@@ -96,9 +91,8 @@ jobs:
               lines = []
               lines.append("|" + "|".join(h or " " for h in headers) + "|")
               lines.append("|" + "|".join("---" for _ in headers) + "|")
-          
-              # 🔹 Loop through data rows
-              BOLD_ROWS = [2, 4]  # <-- bold 3rd and 5th data rows (0-based index)
+
+              BOLD_ROWS = [2, 4]  # 3rd and 5th data rows
 
               for i, r in enumerate(data):
                   padded = r + [""] * (len(headers) - len(r))
@@ -106,27 +100,22 @@ jobs:
                       render_cell(c.replace("\n", "<br>"), headers[j] if j < len(headers) else "")
                       for j, c in enumerate(padded)
                   ]
-              
-                  # Bold only the rows you specify
                   if i in BOLD_ROWS:
                       colored = [f"**{c}**" for c in colored]
-              
-                  lines.append("|" + "|".join(colored) + "|")       
-                  
-               table = "\n".join(lines)
-          
-          # Replace between markers
+                  lines.append("|" + "|".join(colored) + "|")
+
+              table = "\n".join(lines)
+
           pre, rest = text.split(START, 1)
           _, post = rest.split(END, 1)
           updated = f"{pre}{START}\n\n{table}\n\n{END}{post}"
-      
+
           if updated != text:
               OUT.write_text(updated, encoding="utf-8")
               print("✅ Updated resources-table.md with colored badges")
           else:
               print("No changes to resources-table.md")
           PY
-
 
       - name: Commit and push if changed
         run: |
