@@ -37,7 +37,12 @@ jobs:
           python - <<'PY'
           import runpy; runpy.run_path("scripts/csv_to_md.py")
           PY
-
+          
+      - name: Show generated file
+        run: |
+         echo "----- resources-table.md -----"
+         sed -n '1,120p' resources-table.md || true
+         
       - name: Commit and push if changed
         run: |
           if [[ -n "$(git status --porcelain)" ]]; then
