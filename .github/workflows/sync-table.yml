@@ -27,7 +27,7 @@ jobs:
     
       - name: Build resources-table.md from CSV (inline Python)
         run: |
-         python - <<'PY'
+          python - <<'PY'
           import csv
           from pathlib import Path
           from urllib.parse import quote
@@ -51,7 +51,6 @@ jobs:
           # ===========================
       
           def badge(text: str, color: str) -> str:
-              """Return a Shields.io badge for GitHub-safe color display."""
               t = quote(text.replace("-", "–"))
               c = color.lstrip("#")
               return f"![{text}](https://img.shields.io/badge/{t}-{c}?style=flat)"
@@ -115,8 +114,8 @@ jobs:
               print("✅ Updated resources-table.md with colored badges")
           else:
               print("No changes to resources-table.md")
-            
           PY
+
 
       - name: Commit and push if changed
         run: |
