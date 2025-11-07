@@ -2,7 +2,7 @@ import csv
 from pathlib import Path
 import sys
 
-CSV_PATH = Path(".github/workflows/Resources Data Stewardship - git.csv")                # <--- change if needed
+CSV_PATH = Path("data/data.csv")                # <--- change if needed
 OUTPUT_FILE = Path("resources-table.md")        # <--- where table goes
 START = "<!-- AUTO-TABLE:START -->"
 END = "<!-- AUTO-TABLE:END -->"
