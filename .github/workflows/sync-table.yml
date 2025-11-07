@@ -27,7 +27,7 @@ jobs:
     
       - name: Build resources-table.md from CSV (inline Python)
         run: |
-          python - <<'PY'
+          python3 - <<'PY'
           import csv
           from pathlib import Path
           from urllib.parse import quote
@@ -87,7 +87,7 @@ jobs:
               except csv.Error:
                   dialect = csv.excel
               rows = list(csv.reader(f, dialect))
-      
+    
           # Build Markdown table with colored badges
           if not rows:
               table = "_No data_"
@@ -96,14 +96,22 @@ jobs:
               lines = []
               lines.append("|" + "|".join(h or " " for h in headers) + "|")
               lines.append("|" + "|".join("---" for _ in headers) + "|")
-              for r in data:
+          
+              # 🔹 Loop through data rows
+              for i, r in enumerate(data):
                   padded = r + [""] * (len(headers) - len(r))
                   colored = [
-                      render_cell(c.replace("\n", "<br>"), headers[i] if i < len(headers) else "")
-                      for i, c in enumerate(padded)
+                      render_cell(c.replace("\n", "<br>"), headers[j] if j < len(headers) else "")
+                      for j, c in enumerate(padded)
                   ]
+          
+                  # Bold the first two rows
+                  if i < 2:
+                      colored = [f"**{c}**" for c in colored]
+          
                   lines.append("|" + "|".join(colored) + "|")
-              table = "\n".join(lines)
+          
+              table = "\n".join(lines)          
       
           # Replace between markers
           pre, rest = text.split(START, 1)
