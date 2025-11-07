@@ -29,7 +29,7 @@ jobs:
       - name: Build resources-table.md from CSV (inline Python)
         run: |
           python3 - <<'PY'
-          import csv, unicodedata, re
+          import csv
           from pathlib import Path
           from urllib.parse import quote
 
@@ -37,32 +37,6 @@ jobs:
           OUT = Path("resources-table.md")
           START = "<!-- AUTO-TABLE:START -->"
           END   = "<!-- AUTO-TABLE:END -->"
-
-          # Columns where we want "Yes" → header name, "No" → blank
-          TARGET_HEADERS_CANONICAL = [
-              "DataSteward Training",
-              "open science",
-              "data",
-              "database",
-              "repositories",
-              "licensing",
-          ]
-
-          # Robust normalization (handles BOM, NBSP, unicode, extra spaces)
-          def norm(s: str) -> str:
-              if s is None:
-                  return ""
-              s = unicodedata.normalize("NFKC", s)
-              s = s.replace("\u00A0", " ")  # NBSP → space
-              s = s.strip()
-              s = re.sub(r"\s+", " ", s)   # collapse runs of whitespace
-              return s
-
-          YES_VALUES = {"yes", "y", "true", "1", "✓", "✔", "x"}
-          NO_VALUES  = {"no", "n", "false", "0", "✗", "×"}
-
-          # Map lowercase normalized header → canonical display text
-          TARGET_HEADERS = { norm(h).lower(): h for h in TARGET_HEADERS_CANONICAL }
 
           COLOR_MAP = {
               "Categories": {
@@ -82,33 +56,18 @@ jobs:
               return f"![{text}](https://img.shields.io/badge/{t}-{c}?style=flat)"
 
           def render_cell(value: str, header: str) -> str:
-              hv = norm(header)
-              vv_raw = value if value is not None else ""
-              vv = norm(vv_raw)
-
-              if not vv:
+              if value is None:
                   return " "
-
-              h_key = hv.lower()
-
-              # Replace Yes/No only in target columns
-              if h_key in TARGET_HEADERS:
-                  vkey = vv.lower()
-                  if vkey in YES_VALUES:
-                      return TARGET_HEADERS[h_key]   # show the column title
-                  if vkey in NO_VALUES:
-                      return " "                    # blank for No
-                  # fallthrough: if it's something else, keep as-is (but normalized)
-                  return vv
-
-              # Otherwise, apply optional badge coloring
-              if hv in COLOR_MAP:
-                  cmap = COLOR_MAP[hv]
-                  vkey = vv.lower()
-                  if vkey in cmap:
-                      return badge(vv, cmap[vkey])
-
-              return vv
+              v = value.strip()
+              if not v:
+                  return " "
+              h_key = (header or "").strip()
+              v_key = v.lower()
+              if h_key in COLOR_MAP:
+                  cmap = COLOR_MAP[h_key]
+                  if v_key in cmap:
+                      return badge(v, cmap[v_key])
+              return v
 
           # Ensure output file & markers exist
           if not OUT.exists():
@@ -117,7 +76,7 @@ jobs:
           if START not in text or END not in text:
               raise SystemExit("Markers not found in resources-table.md")
 
-          # Read CSV (utf-8-sig removes BOM)
+          # Read CSV (utf-8-sig removes BOM like '﻿Title')
           if not CSV_PATH.exists():
               raise SystemExit(f"CSV not found: {CSV_PATH.resolve()}")
           with CSV_PATH.open("r", encoding="utf-8-sig", newline="") as f:
@@ -129,16 +88,14 @@ jobs:
                   dialect = csv.excel
               rows = list(csv.reader(f, dialect))
 
-          # Build Markdown table
-          per_row_summary_md = ""
-
+          # Build Markdown table with proper header separator
           if not rows:
               table = "_No data_"
           else:
-              # Trim trailing empty columns
+              # Optional: trim trailing empty columns across all rows
               def last_non_empty_idx(r):
                   for k in range(len(r) - 1, -1, -1):
-                      if norm(r[k]):
+                      if (r[k] or "").strip():
                           return k
                   return -1
               rightmost = max(last_non_empty_idx(r) for r in rows)
@@ -149,26 +106,27 @@ jobs:
 
                   max_cols = max(len(r) for r in rows)
                   def mkrow(cells):
-                      return "|" + "|".join((c if norm(c) else " ") for c in cells) + "|"
-
-                  # Headers (raw → canonical for matching; displayed as-is but bold)
-                  raw_headers = rows[0] + [""] * (max_cols - len(rows[0]))
-                  headers_row = [norm(h) for h in raw_headers]  # normalized for matching/mapping
-
+                      return "|" + "|".join((c if c.strip() else " ") for c in cells) + "|"
+          
+                  # Use row 0 as headers for badge mapping of later rows
+                  headers_row = rows[0] + [""] * (max_cols - len(rows[0]))
+          
                   lines = []
-
-                  # ---- Header row (display; not transformed) ----
+          
+                  # ---- Header (row 0) ----
                   hdr_cells = [
-                      (rows[0][j] if j < len(rows[0]) else "").replace("\n", "<br>")
+                      render_cell((rows[0][j] if j < len(rows[0]) else "").replace("\n", "<br>"),
+                                  headers_row[j] if j < len(headers_row) else "")
                       for j in range(max_cols)
                   ]
-                  hdr_cells = [f"**{c}**" if norm(c) else c for c in hdr_cells]
+                  # Bold header row
+                  hdr_cells = [f"**{c}**" if c.strip() else c for c in hdr_cells]
                   lines.append(mkrow(hdr_cells))
-
-                  # ---- Markdown header separator ----
+          
+                  # ---- Mandatory Markdown header separator ----
                   lines.append("|" + "|".join("---" for _ in range(max_cols)) + "|")
-
-                  # ---- Row 2 (bold) ----
+          
+                  # ---- Row 1 (second CSV row) – bold as requested ----
                   if len(rows) > 1:
                       r = rows[1]
                       padded = r + [""] * (max_cols - len(r))
@@ -177,10 +135,10 @@ jobs:
                                       headers_row[j] if j < len(headers_row) else "")
                           for j in range(max_cols)
                       ]
-                      cells = [f"**{c}**" if norm(c) else c for c in cells]
+                      cells = [f"**{c}**" if c.strip() else c for c in cells]
                       lines.append(mkrow(cells))
-
-                  # ---- Remaining rows ----
+          
+                  # ---- Remaining data rows ----
                   for r in rows[2:]:
                       padded = r + [""] * (max_cols - len(r))
                       cells = [
@@ -189,40 +147,17 @@ jobs:
                           for j in range(max_cols)
                       ]
                       lines.append(mkrow(cells))
-
+          
                   table = "\n".join(lines)
-
-                  # ---------- Compact per-row summary ----------
-                  header_index = { norm(headers_row[i]).lower(): i for i in range(len(headers_row)) }
-                  if any(h in header_index for h in TARGET_HEADERS):
-                      summary = [
-                          "",
-                          "#### Per-row selected topics",
-                          "",
-                          "| Row | Columns with “Yes” |",
-                          "|-----|---------------------|",
-                      ]
-                      for ridx, r in enumerate(rows[1:], start=1):
-                          padded = r + [""] * (max_cols - len(r))
-                          yes_labels = []
-                          for h_lc, h_canonical in TARGET_HEADERS.items():
-                              j = header_index.get(h_lc)
-                              if j is None:
-                                  continue
-                              v = norm(padded[j]).lower()
-                              if v in YES_VALUES:
-                                  yes_labels.append(h_canonical)
-                          summary.append(f"| {ridx} | {', '.join(yes_labels) if yes_labels else '—'} |")
-                      per_row_summary_md = "\n".join(summary)
 
           # Replace between markers
           pre, rest = text.split(START, 1)
           _, post = rest.split(END, 1)
-          updated = f"{pre}{START}\n\n{table}{per_row_summary_md}\n\n{END}{post}"
+          updated = f"{pre}{START}\n\n{table}\n\n{END}{post}"
 
           if updated != text:
               OUT.write_text(updated, encoding="utf-8")
-              print("✅ Updated resources-table.md (Yes→header, per-row summary, BOM-safe)")
+              print("✅ Updated resources-table.md (bolded rows 1–2, BOM-safe)")
           else:
               print("No changes to resources-table.md")
           PY
