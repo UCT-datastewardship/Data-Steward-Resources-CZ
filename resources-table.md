@@ -1,6 +1,7 @@
 <!-- AUTO-TABLE:START -->
 
 |**Title**|**Link to source**| | |**Categories**|**Categories**|**Categories**|**Categories**| | |**Knowledge level**| | |**Time needed**| | |**Language**| | |**Keywords**| | | | | | | | | | | | | | |**Information**|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | | | | | | | | | | | | | | | | | | | |**DataSteward Training**|**open science**|**data**|**database**|**repositories**|**licensing**|**good practices**|**bad practices**|**RDM**|**DMP**|**FAIR**|**HE**|**GAČR**|**other**| | |
 |license chooser helper for CC|https://chooser-beta.creativecommons.org/| | |![webpage](https://img.shields.io/badge/webpage-8250df?style=flat)| | | | | |any level| | |few hours|self-paced| |EN| | | | | | | |Yes| | | | | | | | | |Tool for licensing research data and documents|
 |EOSC CZ courses|https://www.youtube.com/@EOSC.CzechRepublic| | |![course](https://img.shields.io/badge/course-22c55e?style=flat)|![video](https://img.shields.io/badge/video-eab308?style=flat)| | | | |beginner| | |few days|self-paced| |CZ| | | | | | | |Yes| | |Yes|Yes| | | |Yes| |Open Science, FAIR principles, data management, ELN|
