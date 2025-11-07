@@ -2,7 +2,7 @@ import csv
 from pathlib import Path
 import sys
 
-CSV_PATH = Path("data/data.csv")       # change if your CSV path differs
+CSV_PATH = Path(".github/workflows/Resources Data Stewardship - git.csv")       # change if your CSV path differs
 README = Path("README.md")
 START = "<!-- AUTO-TABLE:START -->"
 END = "<!-- AUTO-TABLE:END -->"
