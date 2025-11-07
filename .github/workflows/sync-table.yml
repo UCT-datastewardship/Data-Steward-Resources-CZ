@@ -24,9 +24,7 @@ jobs:
           echo "---- data ----"; ls -la data || true
           echo "---- output ----"; ls -la | sed -n '1,200p'
 
-      - name: Build resources-table.md from CSV (inline Python)
-        run: |
-          python - <<'PY'
+    
       - name: Build resources-table.md from CSV (inline Python)
         run: |
          python - <<'PY'
