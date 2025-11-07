@@ -99,7 +99,7 @@ jobs:
               for r in data:
                   padded = r + [""] * (len(headers) - len(r))
                   colored = [
-                      render_cell(c.replace("\n", " "), headers[i] if i < len(headers) else "")
+                      render_cell(c.replace("\n", "<br>"), headers[i] if i < len(headers) else "")
                       for i, c in enumerate(padded)
                   ]
                   lines.append("|" + "|".join(colored) + "|")
