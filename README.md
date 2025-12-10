@@ -1,9 +1,14 @@
 # Data-Steward-Resources-CZ
 Available materials for Data Stewards in CZ and internationally. 
 <p>A list created by the <a href="https://www.linkedin.com/company/data-stewardship-uct/">UCT Data Stewardship team.</p>
-
 <p> The UCT Data Stewardship team is a team of (<i>yes, you guessed it</i>) Data Stewards who are affiliated with the <br><b> University of Chemistry and Technology in Prague </b>.</br> 
 </p>
+
+
+<p><em>This list, including its selection and arrangement, is licensed under a Creative Commons Attribution 4.0 International License (CC BY 4.0), as specified in the LICENSE tab.
+
+Important Note on Referenced Works:
+The links and titles listed within this document refer to external sources and works (e.g., articles, books, websites). These external works are not covered by the CC BY license of this list. Their use, copyright, and licensing are governed by the terms specified by their respective original creators and owners. </p></em>
 
 ## Contributors
 
