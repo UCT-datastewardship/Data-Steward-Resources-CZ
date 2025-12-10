@@ -4,6 +4,7 @@ Available materials for Data Stewards in CZ and internationally.
 <p> The UCT Data Stewardship team is a team of (<i>yes, you guessed it</i>) Data Stewards who are affiliated with the <br><b> University of Chemistry and Technology in Prague </b>.</br> 
 </p>
 
+<strong>The list in a user-friendly modified format is available in resources-table.md</strong>
 
 <p><em>This list, including its selection and arrangement, is licensed under a Creative Commons Attribution 4.0 International License (CC BY 4.0), as specified in the LICENSE tab.
 
