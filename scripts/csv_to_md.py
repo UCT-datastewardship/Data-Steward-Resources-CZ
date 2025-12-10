@@ -2,95 +2,31 @@ import csv
 from pathlib import Path
 import sys
 
-CSV_PATH = Path("data/data.csv")                # <--- change if needed
-OUTPUT_FILE = Path("resources-table.md")        # <--- where table goes
-START = "<!-- AUTO-TABLE:START -->"
-END = "<!-- AUTO-TABLE:END -->"
+# --- YOUR ORIGINAL CONSTANTS ---
+CSV_PATH = Path("data/data.csv")
+OUTPUT_FILE = Path("resources-table.md")
+START = ""
+END = ""
 
-# --- COLOR MAP (Define outside the function, as before) ---
+# VVVVVV REQUIRED GLOBAL COLOR MAP VVVVVV
 COLOR_MAP = {
-    "Data Steward": "#B3E5FC", # Light Blue
-    "Training": "#C8E6C9",     # Light Green
-    "Open Science": "#FFF9C4",  # Light Yellow
-    "data": "#FFCDD2",         # Light Coral
-    "database": "#E1BEE7",     # Light Purple
-    "repositories": "#B2EBF2", # Pale Turquoise
-    "licensing": "#DCEDC8",    # Mint Green
+    "data steward": "#B3E5FC",   # Light Blue
+    "training": "#C8E6C9",       # Light Green
+    "open science": "#FFF9C4",   # Light Yellow
+    "data": "#FFCDD2",           # Light Coral
+    "database": "#E1BEE7",       # Light Purple
+    "repositories": "#B2EBF2",   # Pale Turquoise
+    "licensing": "#DCEDC8",      # Mint Green
     "good practices": "#FFE0B2", # Light Peach
     "bad practices": "#F5F5F5",  # Light Gray
-    "RDM": "#B2DFDB",          # Soft Teal
-    "DMP": "#FFCCBC",          # Soft Orange
-    "FAIR": "#F8BBD0",         # Light Pink
-    "HE": "#FFFDE7",           # Soft Gold
-    "GAČR": "#D7CCC8",         # Light Lavender
-    "other": "#D7CCC8",        # Soft Brown
+    "rdm": "#B2DFDB",            # Soft Teal
+    "dmp": "#FFCCBC",            # Soft Orange
+    "fair": "#F8BBD0",           # Light Pink
+    "he": "#FFFDE7",             # Soft Gold
+    "gačr": "#D7CCC8",           # Light Lavender
+    "other": "#D7CCC8",          # Soft Brown
 }
-# -----------------------------------------------------------
-
-def csv_to_styled_html_table(rows, max_rows=None):
-    if not rows:
-        return "_No data_"
-
-    if len(rows) < 2:
-        # Assuming csv_to_markdown_table is available as a fallback
-        return csv_to_markdown_table(rows, max_rows) 
-
-    top_headers = rows[0]
-    category_headers = rows[1]
-    data_rows = rows[2:]
-    
-    if max_rows:
-        data_rows = data_rows[:max_rows]
-
-    # 1. Store colors for each column
-    column_colors = []
-    
-    html_lines = ["<table>", "<thead>"]
-
-    # --- ROW 1: Top-Level Header (Unstyled) ---
-    html_lines.append("<tr>")
-    for h in top_headers:
-        html_lines.append(f"<th>{h if h else '&nbsp;'}</th>")
-    html_lines.append("</tr>")
-
-    # --- ROW 2: Category Headers (STYLED) and Populate column_colors list ---
-    html_lines.append("<tr>")
-    for h in category_headers:
-        key = h.strip().lower()
-        
-        # Get color, default to white
-        color = COLOR_MAP.get(key, "#FFFFFF") 
-        column_colors.append(color) # Save the color for this column
-        
-        # Apply inline style to the header cell
-        style = f' style="background-color: {color};"'
-        html_lines.append(f'<th{style}>{h if h else "&nbsp;"}</th>')
-    
-    html_lines.append("</tr>")
-    html_lines.append("</thead>")
-    html_lines.append("<tbody>")
-
-    # --- Remaining Data Rows (Styled Data Cells) ---
-    if data_rows:
-        for r in data_rows:
-            html_lines.append("<tr>")
-            for i, cell_content in enumerate(r):
-                # Get the color corresponding to the current column index (i)
-                color = column_colors[i]
-                
-                # Apply inline style to the data cell
-                style = f' style="background-color: {color};"'
-
-                content = (cell_content or "&nbsp;").replace("\n", " ")
-                # Generate the styled data cell <td>
-                html_lines.append(f'<td{style}>{content}</td>')
-            html_lines.append("</tr>")
-    
-    html_lines.append("</tbody>")
-    html_lines.append("</table>")
-    
-    return "\n".join(html_lines)
-    #end of color map
+# ^^^^^^ END COLOR MAP ^^^^^^
 
 def ensure_output_file_has_markers(path: Path):
     if not path.exists():
@@ -117,7 +53,8 @@ def read_csv_rows(csv_path: Path):
         reader = list(csv.reader(f))
     return reader
 
-# Updated function to output an HTML table with sticky rows
+# VVVVVV REQUIRED FALLBACK FUNCTION (Simple Markdown) VVVVVV
+# This is needed because the new function calls it if rows are insufficient.
 def csv_to_markdown_table(rows, max_rows=None):
     if not rows:
         return "_No data_"
@@ -125,23 +62,86 @@ def csv_to_markdown_table(rows, max_rows=None):
     data = rows[1:]
     if max_rows:
         data = data[:max_rows]
-        
-    # Start with headers
-    md = ["|" + "|".join(h if h else " " for h in headers) + "|"]
     
-    # Add separator line
+    md = ["|" + "|".join(h if h else " " for h in headers) + "|"]
     md.append("|" + "|".join("---" for _ in headers) + "|")
     
-    # Add data rows
     if data:
         for r in data:
-            # Replace internal newlines with space and ensure cell is not empty
             md.append("|" + "|".join((c or " ").replace("\n", " ") for c in r) + "|")
     else:
-        # If no data rows, still add an empty row
         md.append("|" + "|".join(" " for _ in headers) + "|")
         
     return "\n".join(md)
+# ^^^^^^ END OF FALLBACK FUNCTION ^^^^^^
+
+
+# VVVVVV YOUR NEW STYLED HTML FUNCTION VVVVVV
+def csv_to_styled_html_table(rows, max_rows=None):
+    if not rows:
+        return "_No data_"
+
+    # Assuming a minimum of two rows (Top Header, Categories)
+    if len(rows) < 2:
+        return csv_to_markdown_table(rows, max_rows)
+
+    top_headers = rows[0]
+    category_headers = rows[1]
+    data_rows = rows[2:]
+
+    if max_rows:
+        data_rows = data_rows[:max_rows]
+
+    # 1. Prepare to store colors for each column
+    column_colors = []
+
+    html_lines = ["<table>", "<thead>"]
+
+    # --- ROW 1: Top-Level Header (Unstyled) ---
+    html_lines.append("<tr>")
+    for h in top_headers:
+        html_lines.append(f"<th>{h if h else '&nbsp;'}</th>")
+    html_lines.append("</tr>")
+
+    # --- ROW 2: Category Headers (STYLED) and Populate column_colors list ---
+    html_lines.append("<tr>")
+    for h in category_headers:
+        key = h.strip().lower() # Match key case with COLOR_MAP
+
+        # Get color from COLOR_MAP, default to white (#FFFFFF)
+        color = COLOR_MAP.get(key, "#FFFFFF")
+        column_colors.append(color) # Save the color for the entire column
+
+        # Apply inline style to the header cell
+        style = f' style="background-color: {color};"'
+        html_lines.append(f'<th{style}>{h if h else "&nbsp;"}</th>')
+
+    html_lines.append("</tr>")
+    html_lines.append("</thead>")
+    html_lines.append("<tbody>")
+
+    # --- Remaining Data Rows (STYLED Data Cells) ---
+    if data_rows:
+        for r in data_rows:
+            html_lines.append("<tr>")
+            for i, cell_content in enumerate(r):
+                # Get the color corresponding to the current column index (i)
+                color = column_colors[i]
+
+                # Apply inline style to the data cell
+                style = f' style="background-color: {color};"'
+
+                content = (cell_content or "&nbsp;").replace("\n", " ")
+                # Generate the styled data cell <td>
+                html_lines.append(f'<td{style}>{content}</td>')
+            html_lines.append("</tr>")
+
+    html_lines.append("</tbody>")
+    html_lines.append("</table>")
+
+    return "\n".join(html_lines)
+# ^^^^^^ END OF YOUR NEW STYLED HTML FUNCTION ^^^^^^
+
 
 def replace_between_markers(text, start, end, replacement):
     if start not in text or end not in text:
@@ -159,13 +159,15 @@ def main():
     rows = read_csv_rows(CSV_PATH)
     print(f"CSV rows detected (including header): {len(rows)}")
 
-    table_md = csv_to_markdown_table(rows)
+    # !!! CRUCIAL CHANGE: Call the new HTML function !!!
+    table_html = csv_to_styled_html_table(rows)
+    
     original = OUTPUT_FILE.read_text(encoding="utf-8")
-    updated = replace_between_markers(original, START, END, table_md)
+    updated = replace_between_markers(original, START, END, table_html)
 
     if updated != original:
         OUTPUT_FILE.write_text(updated, encoding="utf-8")
-        print("✅ Table written to resources-table.md.")
+        print("✅ HTML Table written with fully colored columns.")
     else:
         print("ℹ️ No changes written (content identical).")
 
