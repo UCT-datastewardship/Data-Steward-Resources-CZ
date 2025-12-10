@@ -2,7 +2,7 @@
 
 |**Title**|**Link to source**| | |**Categories**|**Categories**|**Categories**|**Categories**| | |**Knowledge level**| | |**Time needed**| | |**Language**| | |**Keywords**| | | | | | | | | | | | | | |**Information**|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| | | | | | | | | | | | | | | | | | | |**DataSteward Training**|**open science**|**data**|**database**|**repositories**|**licensing**|**good practices**|**bad practices**|**RDM**|**DMP**|**FAIR**|**HE**|**GAČR**|**other**| | |
+| | | | | | | | | | | | | | | | | | | |**Data Steward Training**|**Open Science**|**data**|**database**|**repositories**|**licensing**|**good practices**|**bad practices**|**RDM**|**DMP**|**FAIR**|**HE**|**GAČR**|**other**| | |
 |license chooser helper for CC|https://chooser-beta.creativecommons.org/| | |![webpage](https://img.shields.io/badge/webpage-8250df?style=flat)| | | | | |any level| | |few hours|self-paced| |EN| | | | | | | |Yes| | | | | | | | | |Tool for licensing research data and documents|
 |EOSC CZ courses|https://www.youtube.com/@EOSC.CzechRepublic| | |![course](https://img.shields.io/badge/course-22c55e?style=flat)|![video](https://img.shields.io/badge/video-eab308?style=flat)| | | | |beginner| | |few days|self-paced| |CZ| | | | | | | |Yes| | |Yes|Yes| | | |Yes| |Open Science, FAIR principles, data management, ELN|
 |EOSC-Synergy: Data Steward Training|https://moodle.learn.eosc-synergy.eu/course/view.php?id=132| | |![webpage](https://img.shields.io/badge/webpage-8250df?style=flat)|![course](https://img.shields.io/badge/course-22c55e?style=flat)| | | | |beginner| | |few weeks|self-paced| |EN| | |Yes| |Yes| | |Yes| | |Yes|Yes|Yes| |Yes|Yes| |Course to strengthen RDM skills in university and research staff|
@@ -37,6 +37,8 @@
 |RDM Kit elixir|https://rdmkit.elixir-europe.org/all_training_resources| | |![course](https://img.shields.io/badge/course-22c55e?style=flat)| | | | | |any level| | |self-paced| | |EN| | |Yes| |Yes| | | | | |Yes| | | | | | | |
 |Elixir TeSS materials|https://tess.elixir-europe.org/elearning_materials| | |![webpage](https://img.shields.io/badge/webpage-8250df?style=flat)|![practical guides](https://img.shields.io/badge/practical%20guides-f97316?style=flat)| | | | |any level| | |self-paced| | |EN| | |Yes|Yes|Yes| | | |Yes| |Yes| |Yes| | |Yes| | |
 |Steward's beginner guide|https://www.eosc.cz/komunity/data-stewardi| | |![practical guides](https://img.shields.io/badge/practical%20guides-f97316?style=flat)| | | | | |beginner| | | | | |EN|CZ| |Yes|Yes| | | | |Yes| |Yes| |Yes| | | | | |
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | |
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | |
 | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | |
 | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | |
 
