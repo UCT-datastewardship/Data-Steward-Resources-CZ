@@ -10,7 +10,7 @@ END = ""
 
 # VVVVVV REQUIRED GLOBAL COLOR MAP VVVVVV
 COLOR_MAP = {
-    "data steward": "#B3E5FC",   # Light Blue
+    "data steward training": "#B3E5FC",   # Light Blue
     "training": "#C8E6C9",       # Light Green
     "open science": "#FFF9C4",   # Light Yellow
     "data": "#FFCDD2",           # Light Coral
