@@ -33,101 +33,30 @@ def read_csv_rows(csv_path: Path):
     return reader
 
 # Updated function to output an HTML table with sticky rows
-def csv_to_html_table(rows, max_rows=None):
+def csv_to_markdown_table(rows, max_rows=None):
     if not rows:
         return "_No data_"
-
     headers = rows[0]
-    data_rows = rows[1:]
-
-    # 1. Define the custom CSS for sticky headers
-    # Note: These values (30px, 60px) are based on standard row heights. 
-    # Adjust 'top' values if your rows are significantly taller or shorter.
-    css = """
-<style>
-  /* Base style for all sticky cells */
-  .sticky-header-cell {
-    position: sticky;
-    background-color: #f7f7f7; /* Light gray background to hide content below */
-    z-index: 2; /* Ensures it stays on top of the scrolling content */
-  }
-  /* Sticky Row 1 (Header row) sticks to the very top (top: 0) */
-  .sticky-row-1 {
-    top: 0;
-    border-bottom: 1px solid #ccc;
-  }
-  /* Sticky Row 2 sticks below Sticky Row 1. If Row 1 is 30px tall, Row 2 sticks at 30px */
-  .sticky-row-2 {
-    top: 30px; 
-    border-bottom: 1px solid #ccc;
-  }
-</style>
-"""
+    data = rows[1:]
+    if max_rows:
+        data = data[:max_rows]
+        
+    # Start with headers
+    md = ["|" + "|".join(h if h else " " for h in headers) + "|"]
     
-    # 2. Start HTML Table structure
-    html_lines = [css, "<table>", "<thead>"]
-
-    # --- ROW 1 (The original header row) ---
-    html_lines.append("<tr>")
-    for h in headers:
-        # Apply sticky classes for the first row
-        cell_content = h if h else '&nbsp;'
-        html_lines.append(f'<th class="sticky-header-cell sticky-row-1">{cell_content}</th>')
-    html_lines.append("</tr>")
-
-    # --- ROW 2 (The first data row, which you want to freeze) ---
-    if data_rows:
-        second_row_data = data_rows[0] # Get the data for the second row
-        data_rows = data_rows[1:]      # Remove the first data row from the main data list
-
-        html_lines.append("<tr>")
-        for cell_content in second_row_data:
-            # Apply sticky classes for the second row
-            content = (cell_content or "&nbsp;").replace("\n", " ")
-            html_lines.append(f'<td class="sticky-header-cell sticky-row-2">{content}</td>')
-        html_lines.append("</tr>")
+    # Add separator line
+    md.append("|" + "|".join("---" for _ in headers) + "|")
     
-    html_lines.append("</thead>")
-    html_lines.append("<tbody>")
-
-    # --- Remaining Data Rows (Normal scrolling content) ---
-    if data_rows:
-        for r in data_rows:
-            html_lines.append("<tr>")
-            for cell_content in r:
-                content = (cell_content or "&nbsp;").replace("\n", " ")
-                html_lines.append(f"<td>{content}</td>")
-            html_lines.append("</tr>")
-    
-    html_lines.append("</tbody>")
-    html_lines.append("</table>")
-
-    return "\n".join(html_lines)
-
-
-# Update the main function to call the new HTML function
-def main():
-    print(f"Output file: {OUTPUT_FILE.resolve()}")
-    print(f"CSV path:    {CSV_PATH.resolve()}")
-
-    ensure_output_file_has_markers(OUTPUT_FILE)
-
-    rows = read_csv_rows(CSV_PATH)
-    print(f"CSV rows detected (including header): {len(rows)}")
-
-    # !!! Ensure you call the HTML function here !!!
-    table_html = csv_to_html_table(rows) 
-    
-    original = OUTPUT_FILE.read_text(encoding="utf-8")
-    updated = replace_between_markers(original, START, END, table_html)
-
-    if updated != original:
-        OUTPUT_FILE.write_text(updated, encoding="utf-8")
-        print("✅ HTML Table written with attempted sticky headers.")
+    # Add data rows
+    if data:
+        for r in data:
+            # Replace internal newlines with space and ensure cell is not empty
+            md.append("|" + "|".join((c or " ").replace("\n", " ") for c in r) + "|")
     else:
-        print("ℹ️ No changes written (content identical).")
-
-# ... (The rest of your script remains the same) ...
+        # If no data rows, still add an empty row
+        md.append("|" + "|".join(" " for _ in headers) + "|")
+        
+    return "\n".join(md)
 
 def replace_between_markers(text, start, end, replacement):
     if start not in text or end not in text:
