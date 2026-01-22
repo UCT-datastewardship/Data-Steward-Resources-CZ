@@ -1,0 +1,40 @@
+name: Append Entry to CSV
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  add_row:
+    if: contains(github.event.issue.labels.*.name, 'data-entry')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Parse Issue Form
+        id: parse
+        uses: stefanbuck/github-issue-parser@v3
+
+      - name: Append to CSV
+        run: |
+          # Extract values (this matches the IDs in the form above)
+          TITLE="${{ steps.parse.outputs.title }}"
+          LINK="${{ steps.parse.outputs.link }}"
+          CAT="${{ steps.parse.outputs.categories }}"
+          KNOW="${{ steps.parse.outputs.knowledge_level }}"
+          TIME="${{ steps.parse.outputs.time }}"
+          LANG="${{ steps.parse.outputs.language }}"
+          KEYS="${{ steps.parse.outputs.keywords }}"
+          INFO="${{ steps.parse.outputs.info }}"
+
+          # Append as a CSV row with correct comma spacing
+          # This assumes your structure: Title, Link, [Empty x2], Categories...
+          echo "$TITLE,$LINK,,, $CAT,,, $KNOW,,, $TIME,,, $LANG,,, $KEYS,,,,,,,,,,,,,,, $INFO" >> your_file_name.csv
+
+      - name: Commit change
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add your_file_name.csv
+          git commit -m "Add new entry: ${{ steps.parse.outputs.title }}"
+          git push
