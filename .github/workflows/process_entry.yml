@@ -1,26 +1,53 @@
-- name: Append to CSV
+name: Append Entry to CSV
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  add_row:
+    # Only runs if the issue was created using your specific template
+    if: github.event.issue.title != '' 
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Parse Issue Form
+        id: parse
+        uses: stefanbuck/github-issue-parser@v3
+
+      - name: Append to CSV
         run: |
           # 1. Path to your file
           FILE="data/data.csv"
 
-          # 2. Capture Form Data
-          TITLE="${{ steps.parse.outputs.title }}"
-          LINK="${{ steps.parse.outputs.link }}"
-          
-          # We join checkboxes with a semicolon so they don't break the CSV commas
-          CAT=$(echo "${{ steps.parse.outputs.categories }}" | tr '\n' ';')
-          KNOW="${{ steps.parse.outputs.knowledge_level }}"
-          TIME="${{ steps.parse.outputs.time_needed }}"
-          LANG="${{ steps.parse.outputs.language }}"
-          KEYS=$(echo "${{ steps.parse.outputs.keywords }}" | tr '\n' ';')
-          INFO="${{ steps.parse.outputs.information }}"
+          # 2. Capture and Clean Form Data
+          # We use 'sed' to ensure no commas inside the text break the CSV columns
+          TITLE=$(echo "${{ steps.parse.outputs.title }}" | sed 's/,/;/g')
+          LINK=$(echo "${{ steps.parse.outputs.link }}" | sed 's/,/;/g')
+          CAT=$(echo "${{ steps.parse.outputs.categories }}" | tr '\n' ' ' | sed 's/,/;/g')
+          KNOW=$(echo "${{ steps.parse.outputs.knowledge_level }}" | sed 's/,/;/g')
+          TIME=$(echo "${{ steps.parse.outputs.time_needed }}" | sed 's/,/;/g')
+          LANG=$(echo "${{ steps.parse.outputs.language }}" | sed 's/,/;/g')
+          KEYS=$(echo "${{ steps.parse.outputs.keywords }}" | tr '\n' ' ' | sed 's/,/;/g')
+          INFO=$(echo "${{ steps.parse.outputs.information }}" | tr '\n' ' ' | sed 's/,/;/g')
 
           # 3. THE EXACT COMMA MAP
-          # Based on HEADER2, the sub-categories start at the 20th column.
-          # Structure: Title(1), Link(2), Empty(3-19), Cats(20), Keywords(21+), etc.
-          # To keep it simple and safe for your layout, we format it like this:
+          # Header 1 has Title, Link, [gap], Categories...
+          # Header 2 has 19 leading commas before the sub-headers start.
+          # We use 18 commas after Link to align with the 20th column.
           
-          NEW_ROW="$TITLE,$LINK,,,,,,,,,,,,,,,,,,$CAT,$KEYS,$KNOW,$TIME,$LANG,$INFO"
+          NEW_ROW="$TITLE,$LINK,,,,,,,,,,,,,,,,,,$CAT,$KNOW,$TIME,$LANG,$KEYS,,,,,,,,,,,,,,,$INFO"
           
           # 4. Append to the real file
           echo "$NEW_ROW" >> "$FILE"
+
+      - name: Commit and Push
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add data/data.csv
+          git commit -m "Add new entry: ${{ steps.parse.outputs.title }}"
+          git push
