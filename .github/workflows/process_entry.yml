@@ -29,12 +29,12 @@ jobs:
 
           # Append as a CSV row with correct comma spacing
           # This assumes your structure: Title, Link, [Empty x2], Categories...
-          echo "$TITLE,$LINK,,, $CAT,,, $KNOW,,, $TIME,,, $LANG,,, $KEYS,,,,,,,,,,,,,,, $INFO" >> your_file_name.csv
+          echo "$TITLE,$LINK,,, $CAT,,, $KNOW,,, $TIME,,, $LANG,,, $KEYS,,,,,,,,,,,,,,, $INFO" >> data.csv
 
       - name: Commit change
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add your_file_name.csv
+          git add data.csv
           git commit -m "Add new entry: ${{ steps.parse.outputs.title }}"
           git push
