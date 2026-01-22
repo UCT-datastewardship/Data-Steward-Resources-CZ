@@ -1,17 +1,17 @@
 name: 📝 Add New Entry to Database
-description: Fill out this form to add a new resource to the CSV.
+description: Fill out this form to add a new resource to the data/data.csv file.
 title: "[Data Entry]: "
 labels: ["data-entry"]
 body:
   - type: markdown
     attributes:
       value: |
-        ### Basic Information
+        ### Core Information
   - type: input
     id: title
     attributes:
       label: Title
-      placeholder: e.g., Introduction to RDM
+      placeholder: e.g., Data Management Basics
     validations:
       required: true
   - type: input
@@ -19,47 +19,39 @@ body:
     attributes:
       label: Link to source
       placeholder: https://...
-    validations:
-      required: true
 
-  - type: markdown
-    attributes:
-      value: |
-        ---
-        ### Categories & Knowledge
-  - type: checkboxes
+  - type: dropdown
     id: categories
     attributes:
-      label: Categories (Select all that apply)
+      label: Categories
       options:
-        - label: Data Steward Training
-        - label: Open Science
+        - Data Steward Training
+        - Open Science
+        - Both
+        - Other
+
   - type: input
     id: knowledge_level
     attributes:
-      label: Knowledge Level
-      placeholder: e.g., Beginner, Intermediate
+      label: Knowledge level
+      placeholder: e.g., Beginner
 
-  - type: markdown
-    attributes:
-      value: |
-        ---
-        ### Logistics
   - type: input
-    id: time
+    id: time_needed
     attributes:
       label: Time needed
-      placeholder: e.g., 2 hours
+      placeholder: e.g., 45 mins
+
   - type: input
     id: language
     attributes:
       label: Language
-      placeholder: e.g., English, Czech
+      placeholder: e.g., English
 
   - type: checkboxes
     id: keywords
     attributes:
-      label: Keywords / Topics
+      label: Keywords / Funding Agency
       options:
         - label: data
         - label: database
@@ -75,7 +67,7 @@ body:
         - label: other
 
   - type: textarea
-    id: info
+    id: information
     attributes:
-      label: Additional Information
-      placeholder: Any other notes...
+      label: Information
+      placeholder: Additional description or notes...
