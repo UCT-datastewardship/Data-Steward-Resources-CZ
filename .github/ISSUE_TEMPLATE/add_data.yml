@@ -1,0 +1,81 @@
+name: 📝 Add New Entry to Database
+description: Fill out this form to add a new resource to the CSV.
+title: "[Data Entry]: "
+labels: ["data-entry"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ### Basic Information
+  - type: input
+    id: title
+    attributes:
+      label: Title
+      placeholder: e.g., Introduction to RDM
+    validations:
+      required: true
+  - type: input
+    id: link
+    attributes:
+      label: Link to source
+      placeholder: https://...
+    validations:
+      required: true
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        ### Categories & Knowledge
+  - type: checkboxes
+    id: categories
+    attributes:
+      label: Categories (Select all that apply)
+      options:
+        - label: Data Steward Training
+        - label: Open Science
+  - type: input
+    id: knowledge_level
+    attributes:
+      label: Knowledge Level
+      placeholder: e.g., Beginner, Intermediate
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        ### Logistics
+  - type: input
+    id: time
+    attributes:
+      label: Time needed
+      placeholder: e.g., 2 hours
+  - type: input
+    id: language
+    attributes:
+      label: Language
+      placeholder: e.g., English, Czech
+
+  - type: checkboxes
+    id: keywords
+    attributes:
+      label: Keywords / Topics
+      options:
+        - label: data
+        - label: database
+        - label: repositories
+        - label: licensing
+        - label: good practices
+        - label: bad practices
+        - label: RDM
+        - label: DMP
+        - label: FAIR
+        - label: HE
+        - label: GAČR
+        - label: other
+
+  - type: textarea
+    id: info
+    attributes:
+      label: Additional Information
+      placeholder: Any other notes...
