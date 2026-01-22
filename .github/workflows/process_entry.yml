@@ -1,31 +1,26 @@
-name: Append Entry to CSV
-on:
-  issues:
-    types: [opened]
-
-jobs:
-  add_row:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write # Important for pushing changes back
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-
-      - name: Parse Issue Form
-        id: parse
-        uses: stefanbuck/github-issue-parser@v3
-
-      - name: Append to CSV
+- name: Append to CSV
         run: |
-          # 1. Update the path here to include the folder name
-          echo "${{ steps.parse.outputs.title }},${{ steps.parse.outputs.link }},,,${{ steps.parse.outputs.categories }},,,${{ steps.parse.outputs.knowledge_level }},,,${{ steps.parse.outputs.time }},,,${{ steps.parse.outputs.language }},,,${{ steps.parse.outputs.keywords }},,,,,,,,,,,,,,,${{ steps.parse.outputs.info }}" >> data/data.csv
+          # 1. Path to your file
+          FILE="data/data.csv"
 
-      - name: Commit change
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          # 2. Update the path here as well
-          git add data/data.csv
-          git commit -m "Add new entry: ${{ steps.parse.outputs.title }}"
-          git push
+          # 2. Capture Form Data
+          TITLE="${{ steps.parse.outputs.title }}"
+          LINK="${{ steps.parse.outputs.link }}"
+          
+          # We join checkboxes with a semicolon so they don't break the CSV commas
+          CAT=$(echo "${{ steps.parse.outputs.categories }}" | tr '\n' ';')
+          KNOW="${{ steps.parse.outputs.knowledge_level }}"
+          TIME="${{ steps.parse.outputs.time_needed }}"
+          LANG="${{ steps.parse.outputs.language }}"
+          KEYS=$(echo "${{ steps.parse.outputs.keywords }}" | tr '\n' ';')
+          INFO="${{ steps.parse.outputs.information }}"
+
+          # 3. THE EXACT COMMA MAP
+          # Based on HEADER2, the sub-categories start at the 20th column.
+          # Structure: Title(1), Link(2), Empty(3-19), Cats(20), Keywords(21+), etc.
+          # To keep it simple and safe for your layout, we format it like this:
+          
+          NEW_ROW="$TITLE,$LINK,,,,,,,,,,,,,,,,,,$CAT,$KEYS,$KNOW,$TIME,$LANG,$INFO"
+          
+          # 4. Append to the real file
+          echo "$NEW_ROW" >> "$FILE"
