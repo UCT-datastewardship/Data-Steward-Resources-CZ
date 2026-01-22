@@ -6,6 +6,8 @@ on:
 jobs:
   add_row:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # Important for pushing changes back
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -16,14 +18,14 @@ jobs:
 
       - name: Append to CSV
         run: |
-          # Use actual column values from the form
-          # Adjusting the comma count to match your double-header structure
-          echo "${{ steps.parse.outputs.title }},${{ steps.parse.outputs.link }},,,${{ steps.parse.outputs.categories }},,,${{ steps.parse.outputs.knowledge_level }},,,${{ steps.parse.outputs.time }},,,${{ steps.parse.outputs.language }},,,${{ steps.parse.outputs.keywords }},,,,,,,,,,,,,,,${{ steps.parse.outputs.info }}" >> data.csv
+          # 1. Update the path here to include the folder name
+          echo "${{ steps.parse.outputs.title }},${{ steps.parse.outputs.link }},,,${{ steps.parse.outputs.categories }},,,${{ steps.parse.outputs.knowledge_level }},,,${{ steps.parse.outputs.time }},,,${{ steps.parse.outputs.language }},,,${{ steps.parse.outputs.keywords }},,,,,,,,,,,,,,,${{ steps.parse.outputs.info }}" >> data/data.csv
 
       - name: Commit change
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add data.csv
+          # 2. Update the path here as well
+          git add data/data.csv
           git commit -m "Add new entry: ${{ steps.parse.outputs.title }}"
           git push
