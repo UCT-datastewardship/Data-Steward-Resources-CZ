@@ -1,3 +1,4 @@
+#this script takes information added in the ISSUE FORM for new data entry, and adds the entry to the data.csv
 name: Append Entry to CSV
 on:
   issues:
