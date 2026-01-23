@@ -17,71 +17,82 @@ jobs:
         id: parse
         uses: stefanbuck/github-issue-parser@v3
 
-      - name: Append to CSV
+      - name: Process and Append
+        shell: python
         run: |
-          FILE="data/data.csv"
-          JSON_DATA='${{ steps.parse.outputs.jsonString }}'
+          import csv
+          import json
+          import os
+
+          # 1. Load the parsed data
+          issue_data = json.loads('''${{ steps.parse.outputs.jsonString }}''')
+          file_path = 'data/data.csv'
+
+          # 2. Extract values (cleaning commas to avoid breaking CSV)
+          def get_val(key):
+              val = issue_data.get(key, "")
+              return val.replace(",", ";") if isinstance(val, str) else val
+
+          title = get_val("Title")
+          link = get_val("Link to source")
+          know = get_val("Knowledge level")
+          time = get_val("Time needed")
+          lang = get_val("Language")
+          info = get_val("Information")
+          cats = issue_data.get("Categories", [])
+          keys = issue_data.get("Keywords", [])
+
+          # 3. Read existing headers to match alignment
+          with open(file_path, mode='r', encoding='utf-8') as f:
+              reader = csv.reader(f)
+              headers = next(reader) # Row 1
+              sub_headers = next(reader) # Row 2
+
+          # 4. Build the new row based on header names
+          new_row = [""] * len(headers)
           
-          get_fuzzy_val() {
-            echo "$JSON_DATA" | jq -r "to_entries[] | select(.key | ascii_downcase == \"$1\") | .value" | head -n 1 | sed 's/,/;/g' | tr -d '\r\n'
-          }
+          for i, header in enumerate(headers):
+              h_lower = header.lower()
+              s_lower = sub_headers[i].lower() if i < len(sub_headers) else ""
 
-          TITLE=$(get_fuzzy_val "title")
-          LINK=$(get_fuzzy_val "link to source")
-          KNOW=$(get_fuzzy_val "knowledge level")
-          TIME=$(get_fuzzy_val "time needed")
-          LANG=$(get_fuzzy_val "language")
-          INFO=$(get_fuzzy_val "information")
-          ALL_CATS=$(get_fuzzy_val "categories")
-          ALL_KEYS=$(get_fuzzy_val "keywords")
+              if "title" in h_lower: new_row[i] = title
+              elif "link" in h_lower: new_row[i] = link
+              elif "knowledge" in h_lower: new_row[i] = know
+              elif "time" in h_lower: new_row[i] = time
+              elif "language" in h_lower: new_row[i] = lang
+              elif "information" in h_lower: new_row[i] = info
+              
+              # Place Categories
+              if "categories" in h_lower:
+                  for cat in cats:
+                      if cat.lower() in s_lower or cat.lower() in h_lower:
+                          new_row[i] = cat
 
-          if [ -z "$TITLE" ] || [ "$TITLE" == "null" ]; then
-            exit 1
-          fi
+              # Place Keywords (Yes/No)
+              for key in keys:
+                  if key.lower() in s_lower:
+                      new_row[i] = "Yes"
 
-          # Categories Mapping
-          [[ "$ALL_CATS" == *"webpage"* ]] && C1="webpage" || C1=""
-          [[ "$ALL_CATS" == *"course"* ]] && C2="course" || C2=""
-          [[ "$ALL_CATS" == *"video"* ]] && C3="video" || C3=""
-          [[ "$ALL_CATS" == *"article"* ]] && C4="article" || C4=""
-          [[ "$ALL_CATS" == *"document"* ]] && C5="document" || C5=""
-          [[ "$ALL_CATS" == *"practical guides"* ]] && C6="practical guides" || C6=""
-          [[ "$ALL_CATS" == *"meeting"* ]] && C7="meeting" || C7=""
-
-          # Keyword Yes/No Logic
-          [[ "$ALL_KEYS" == *"Data Steward Training"* ]] && K1="Yes" || K1=""
-          [[ "$ALL_KEYS" == *"open science"* ]] && K2="Yes" || K2=""
-          [[ "$ALL_KEYS" == *"data"* ]] && K3="Yes" || K3=""
-          [[ "$ALL_KEYS" == *"database"* ]] && K4="Yes" || K4=""
-          [[ "$ALL_KEYS" == *"repositories"* ]] && K5="Yes" || K5=""
-          [[ "$ALL_KEYS" == *"licensing"* ]] && K6="Yes" || K6=""
-          [[ "$ALL_KEYS" == *"good practices"* ]] && K7="Yes" || K7=""
-          [[ "$ALL_KEYS" == *"bad practices"* ]] && K8="Yes" || K8=""
-          [[ "$ALL_KEYS" == *"RDM"* ]] && K9="Yes" || K9=""
-          [[ "$ALL_KEYS" == *"DMP"* ]] && K10="Yes" || K10=""
-          [[ "$ALL_KEYS" == *"FAIR"* ]] && K11="Yes" || K11=""
-          [[ "$ALL_KEYS" == *"HE"* ]] && K12="Yes" || K12=""
-          [[ "$ALL_KEYS" == *"GAČR"* ]] && K13="Yes" || K13=""
-          [[ "$ALL_KEYS" == *"other"* ]] && K14="Yes" || K14=""
-
-          # --- MATCHING YOUR EXACT 34 COMMA PATTERN ---
-          # Patterns: Title(1), Link(2), Gap(3,4), Cats(5-11), Gap(12,13), Know(14), Gap(15), Time(16), Gap(17), Lang(18), Gap(19), Keywords(20-33), Gap(34), Info(35)
-          NEW_ROW="$TITLE,$LINK,,$C1,$C2,$C3,$C4,$C5,$C6,$C7,,$KNOW,,$TIME,,$LANG,,$K1,$K2,$K3,$K4,$K5,$K6,$K7,$K8,$K9,$K10,$K11,$K12,$K13,$K14,,$INFO"
+          # 5. Append the row
+          with open(file_path, mode='a', encoding='utf-8', newline='') as f:
+              writer = csv.writer(f)
+              writer.writerow(new_row)
           
-          echo "$NEW_ROW" >> "$FILE"
-          echo "FINAL_TITLE=$TITLE" >> $GITHUB_ENV
+          # Pass title to env for renaming
+          with open(os.environ['GITHUB_ENV'], 'a') as env:
+              env.write(f"FINAL_TITLE={title}\n")
 
       - name: Commit and Push
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add data/data.csv
-          git commit -m "Add entry: $FINAL_TITLE"
+          git commit -m "Automated entry: $FINAL_TITLE"
           git push
 
       - name: Rename and Close Issue
         run: |
           gh issue edit ${{ github.event.issue.number }} --title "[Data Entry]: $FINAL_TITLE"
-          gh issue close ${{ github.event.issue.number }} --comment "Added successfully to synchronized CSV."
+          gh issue close ${{ github.event.issue.number }} --comment "Added successfully to CSV."
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
