@@ -39,7 +39,7 @@ jobs:
             exit 1
           fi
 
-          # Categories (Name in cell)
+          # Categories Logic
           [[ "$ALL_CATS" == *"webpage"* ]] && C1="webpage" || C1=""
           [[ "$ALL_CATS" == *"course"* ]] && C2="course" || C2=""
           [[ "$ALL_CATS" == *"video"* ]] && C3="video" || C3=""
@@ -48,7 +48,7 @@ jobs:
           [[ "$ALL_CATS" == *"practical guides"* ]] && C6="practical guides" || C6=""
           [[ "$ALL_CATS" == *"meeting"* ]] && C7="meeting" || C7=""
 
-          # Keywords (Yes in cell)
+          # Keywords Logic
           [[ "$ALL_KEYS" == *"Data Steward Training"* ]] && K1="Yes" || K1=""
           [[ "$ALL_KEYS" == *"open science"* ]] && K2="Yes" || K2=""
           [[ "$ALL_KEYS" == *"data"* ]] && K3="Yes" || K3=""
@@ -64,8 +64,9 @@ jobs:
           [[ "$ALL_KEYS" == *"GAČR"* ]] && K13="Yes" || K13=""
           [[ "$ALL_KEYS" == *"other"* ]] && K14="Yes" || K14=""
 
-          # FIXED ROW: Exactly 35 columns (34 commas)
-          NEW_ROW="$TITLE,$LINK,,$C1,$C2,$C3,$C4,$C5,$C6,$C7,,$KNOW,,$TIME,,$LANG,,$K1,$K2,$K3,$K4,$K5,$K6,$K7,$K8,$K9,$K10,$K11,$K12,$K13,$K14,$INFO"
+          # UPDATED ROW: Precisely 34 commas (35 columns)
+          # Title(1),Link(2),Gap(3,4,5),Cats(6,7,8,9,10,11,12),Gap(13,14,15),Know(16),Gap(17),Time(18),Gap(19),Lang(20),Keywords(21-34),Info(35)
+          NEW_ROW="$TITLE,$LINK,,,$C1,$C2,$C3,$C4,$C5,$C6,$C7,,,$KNOW,,$TIME,,$LANG,,$K1,$K2,$K3,$K4,$K5,$K6,$K7,$K8,$K9,$K10,$K11,$K12,$K13,$K14,$INFO"
           
           echo "$NEW_ROW" >> "$FILE"
           echo "FINAL_TITLE=$TITLE" >> $GITHUB_ENV
