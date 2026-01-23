@@ -21,22 +21,32 @@ jobs:
         run: |
           FILE="data/data.csv"
           
-          # Use the specific IDs defined in the template body
-          TITLE=$(echo "${{ steps.parse.outputs.title_field }}" | sed 's/,/;/g' | tr -d '\r\n')
-          LINK=$(echo "${{ steps.parse.outputs.link_field }}" | sed 's/,/;/g' | tr -d '\r\n')
-          KNOW=$(echo "${{ steps.parse.outputs.know_field }}" | sed 's/,/;/g' | tr -d '\r\n')
-          TIME=$(echo "${{ steps.parse.outputs.time_field }}" | sed 's/,/;/g' | tr -d '\r\n')
-          LANG=$(echo "${{ steps.parse.outputs.lang_field }}" | sed 's/,/;/g' | tr -d '\r\n')
-          INFO=$(echo "${{ steps.parse.outputs.info_field }}" | sed 's/,/;/g' | tr -d '\n')
+          # Using JSON parsing to be 100% sure we get the data regardless of IDs
+          # This pulls by the LABEL name instead of the ID
+          JSON_DATA='${{ steps.parse.outputs.jsonString }}'
+          
+          get_val() {
+            echo "$JSON_DATA" | jq -r ".\"$1\" // \"\"" | sed 's/,/;/g' | tr -d '\r\n'
+          }
 
-          # Final safety check
-          if [ -z "$TITLE" ]; then
-            echo "Error: Title field was empty. Parsed Title: $TITLE"
+          TITLE=$(get_val "Title")
+          LINK=$(get_val "Link to source")
+          KNOW=$(get_val "Knowledge level")
+          TIME=$(get_val "Time needed")
+          LANG=$(get_val "Language")
+          INFO=$(get_val "Information")
+          
+          ALL_CATS=$(get_val "Categories")
+          ALL_KEYS=$(get_val "Keywords")
+
+          # Safety check
+          if [ -z "$TITLE" ] || [ "$TITLE" == "null" ]; then
+            echo "Error: Title not found in form data."
+            echo "Debug JSON: $JSON_DATA"
             exit 1
           fi
 
-          # --- CATEGORY TEXT LOGIC ---
-          ALL_CATS="${{ steps.parse.outputs.cat_field }}"
+          # --- CATEGORY LOGIC ---
           [[ "$ALL_CATS" == *"webpage"* ]] && C1="webpage" || C1=""
           [[ "$ALL_CATS" == *"course"* ]] && C2="course" || C2=""
           [[ "$ALL_CATS" == *"video"* ]] && C3="video" || C3=""
@@ -45,8 +55,7 @@ jobs:
           [[ "$ALL_CATS" == *"practical guides"* ]] && C6="practical guides" || C6=""
           [[ "$ALL_CATS" == *"meeting"* ]] && C7="meeting" || C7=""
 
-          # --- KEYWORD "YES" LOGIC ---
-          ALL_KEYS="${{ steps.parse.outputs.key_field }}"
+          # --- KEYWORD LOGIC ---
           [[ "$ALL_KEYS" == *"Data Steward Training"* ]] && K1="Yes" || K1=""
           [[ "$ALL_KEYS" == *"open science"* ]] && K2="Yes" || K2=""
           [[ "$ALL_KEYS" == *"data"* ]] && K3="Yes" || K3=""
@@ -62,7 +71,6 @@ jobs:
           [[ "$ALL_KEYS" == *"GAČR"* ]] && K13="Yes" || K13=""
           [[ "$ALL_KEYS" == *"other"* ]] && K14="Yes" || K14=""
 
-          # --- CONSTRUCT ROW ---
           NEW_ROW="$TITLE,$LINK,,,$C1,$C2,$C3,$C4,$C5,$C6,$C7,,,$KNOW,,,$TIME,,,$LANG,,,$K1,$K2,$K3,$K4,$K5,$K6,$K7,$K8,$K9,$K10,$K11,$K12,$K13,$K14,,,,,,,,,,,,,,,,$INFO"
           
           echo "$NEW_ROW" >> "$FILE"
@@ -72,10 +80,10 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add data/data.csv
-          git commit -m "Automated entry: $TITLE"
+          git commit -m "Add entry via form"
           git push
 
       - name: Close Issue
-        run: gh issue close ${{ github.event.issue.number }} --comment "Added successfully to the database."
+        run: gh issue close ${{ github.event.issue.number }} --comment "Resource added!"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
