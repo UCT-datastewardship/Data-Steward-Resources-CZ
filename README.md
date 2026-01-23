@@ -11,6 +11,9 @@ Available materials for Data Stewards in CZ and internationally.
 Important Note on Referenced Works:
 The links and titles listed within this document refer to external sources and works (e.g., articles, books, websites). These external works are not covered by the CC BY license of this list. Their use, copyright, and licensing are governed by the terms specified by their respective original creators and owners. </p></em>
 
+Notice on scripts:
+The scripts are given under MIT license. They were created using ChatGTP, Google Gemini and Perplexity.
+
 ## Contributors
 
 - ### Georgia Koutentaki, MEng. (ČVUT, VŠCHT)  OrcID: <a href='https://orcid.org/0000-0002-8099-9963'> 0000-0002-8099-9963
