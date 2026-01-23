@@ -24,68 +24,64 @@ jobs:
           import json
           import os
 
-          # 1. Load the data from the form
+          # 1. Load the data
           issue_data = json.loads('''${{ steps.parse.outputs.jsonString }}''')
           file_path = 'data/data.csv'
 
-          def get_val(key):
-              val = issue_data.get(key, "")
-              return val.replace(",", ";") if isinstance(val, str) else val
+          # 2. Extract values using the NEW IDs from the template
+          title = issue_data.get("title", "").replace(",", ";")
+          link = issue_data.get("link", "").replace(",", ";")
+          know = issue_data.get("knowledge", "").replace(",", ";")
+          time = issue_data.get("time", "").replace(",", ";")
+          lang = issue_data.get("language", "").replace(",", ";")
+          info = issue_data.get("information", "").replace(",", ";")
+          cats = issue_data.get("categories", [])
+          keys = issue_data.get("keywords", [])
 
-          title = get_val("Title")
-          link = get_val("Link to source")
-          know = get_val("Knowledge level")
-          time = get_val("Time needed")
-          lang = get_val("Language")
-          info = get_val("Information")
-          cats = issue_data.get("Categories", [])
-          keys = issue_data.get("Keywords", [])
+          # Safety check: if title is missing, stop
+          if not title or title == "null":
+              print("Error: Title is empty")
+              exit(1)
 
-          # 2. Read existing headers to understand the 35-column map
+          # 3. Read existing headers
           with open(file_path, mode='r', encoding='utf-8') as f:
               reader = csv.reader(f)
               header1 = next(reader)
               header2 = next(reader)
 
-          # 3. Create a blank row of the correct length
+          # 4. Create blank row
           new_row = [""] * len(header1)
           
-          # 4. Fill the row based on your specific layout
-          # Column 0: Title, Column 1: Link
+          # Mapping to your columns:
           new_row[0] = title
           new_row[1] = link
-
-          # Place Categories in columns 4, 5, 6, 7 (Based on your header 'Categories' repeated)
-          cat_options = ["webpage", "course", "video", "article", "document", "practical guides", "meeting"]
-          for i, option in enumerate(cat_options):
-              if option in cats:
-                  # We place the text of the category if selected
-                  # This puts them into the columns where 'Categories' is labeled
-                  if i < 4: new_row[4+i] = option 
-
-          # Place specific fields
-          new_row[10] = know  # Knowledge level
-          new_row[13] = time  # Time needed
-          new_row[16] = lang  # Language
-
-          # Keywords (Columns 19 through 32 based on your header)
-          keyword_map = ["Data Steward Training", "open science", "data", "database", "repositories", 
-                         "licensing", "good practices", "bad practices", "RDM", "DMP", 
-                         "FAIR", "HE", "GAČR", "other"]
           
-          for i, key_name in enumerate(keyword_map):
-              if key_name in keys:
+          # Categories mapping (columns 4, 5, 6, 7)
+          if "webpage" in cats: new_row[4] = "webpage"
+          if "course" in cats: new_row[5] = "course"
+          if "video" in cats: new_row[6] = "video"
+          if "article" in cats: new_row[7] = "article"
+
+          new_row[10] = know
+          new_row[13] = time
+          new_row[16] = lang
+
+          # Keyword mapping (starts at column 19)
+          keyword_list = ["Data Steward Training", "open science", "data", "database", "repositories", 
+                          "licensing", "good practices", "bad practices", "RDM", "DMP", 
+                          "FAIR", "HE", "GAČR", "other"]
+          
+          for i, kw in enumerate(keyword_list):
+              if kw in keys:
                   new_row[19+i] = "Yes"
 
-          # Column 34: Information (Last column)
           new_row[-1] = info
 
-          # 5. Append the row to the bottom of the file
+          # 5. Append
           with open(file_path, mode='a', encoding='utf-8', newline='') as f:
               writer = csv.writer(f)
               writer.writerow(new_row)
           
-          # Set title for the next step
           with open(os.environ['GITHUB_ENV'], 'a') as env:
               env.write(f"FINAL_TITLE={title}\n")
 
@@ -94,12 +90,12 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add data/data.csv
-          git commit -m "Automated entry: $FINAL_TITLE"
+          git commit -m "Add entry: $FINAL_TITLE"
           git push
 
       - name: Rename and Close Issue
         run: |
           gh issue edit ${{ github.event.issue.number }} --title "[Data Entry]: $FINAL_TITLE"
-          gh issue close ${{ github.event.issue.number }} --comment "Data added successfully."
+          gh issue close ${{ github.event.issue.number }} --comment "Added successfully."
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
