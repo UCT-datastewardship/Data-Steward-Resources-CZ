@@ -3,18 +3,22 @@ description: Use this form to add a row to data/data.csv
 title: "[Data Entry]: "
 labels: ["data-entry"]
 body:
+  - type: markdown
+    attributes:
+      value: "Please fill in the details below. The top 'Add a title' field is for the Issue name, while the 'Title' field below is for the resource name."
   - type: input
-    id: input_title
+    id: title_field
     attributes:
       label: Title
+      placeholder: "e.g., Introduction to RDM"
     validations:
       required: true
   - type: input
-    id: input_link
+    id: link_field
     attributes:
       label: Link to source
   - type: checkboxes
-    id: input_categories
+    id: cat_field
     attributes:
       label: Categories (Select all that apply)
       options:
@@ -26,19 +30,19 @@ body:
         - label: practical guides
         - label: meeting
   - type: input
-    id: input_knowledge
+    id: know_field
     attributes:
       label: Knowledge level
   - type: input
-    id: input_time
+    id: time_field
     attributes:
       label: Time needed
   - type: input
-    id: input_language
+    id: lang_field
     attributes:
       label: Language
   - type: checkboxes
-    id: input_keywords
+    id: key_field
     attributes:
       label: Keywords / Funding Agency
       options:
@@ -57,6 +61,6 @@ body:
         - label: GAČR
         - label: other
   - type: textarea
-    id: input_info
+    id: info_field
     attributes:
       label: Information
