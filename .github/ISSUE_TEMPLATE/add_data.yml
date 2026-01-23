@@ -1,3 +1,4 @@
+#THIS ISSUE TEMPLATE CREATES AN ISSUE FORM FOR ADDING NEW RESOURCES TO THE data.csv AS A NEW ROW
 name: 📝 Add New Entry to Database
 description: Use this form to add a row to data/data.csv
 title: " Data Entry "
