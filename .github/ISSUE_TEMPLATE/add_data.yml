@@ -32,7 +32,6 @@ body:
     id: knowledge
     attributes:
       label: Knowledge level
-      description: Select one or more levels.
       options:
         - label: any level
         - label: beginner
@@ -42,7 +41,6 @@ body:
     id: time_duration
     attributes:
       label: Time needed (Duration)
-      description: How long does this resource take?
       options:
         - "few hours"
         - "few days"
@@ -58,7 +56,6 @@ body:
     id: language
     attributes:
       label: Language
-      description: Select one or more languages.
       options:
         - label: EN
         - label: CZ
