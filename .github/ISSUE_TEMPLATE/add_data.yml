@@ -7,7 +7,8 @@ body:
     attributes:
       value: |
         ### 📝 Resource Details
-        **Note:** Please focus on the fields below. The top 'Add a title' field will be automatically updated by the system.
+        **Note:** Please ignore the 'Add a title' box at the very top. 
+        Enter the name of your resource in the **Title** field below.
   - type: input
     attributes:
       label: Title
