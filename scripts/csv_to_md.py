@@ -1,3 +1,4 @@
+#this script makes a markdown table shown in the file resources-table.md for easier reading of the database
 import csv
 from pathlib import Path
 import sys
