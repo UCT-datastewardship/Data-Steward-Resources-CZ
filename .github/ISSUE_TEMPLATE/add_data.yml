@@ -25,9 +25,6 @@ body:
         - label: course
         - label: video
         - label: article
-        - label: document
-        - label: practical guides
-        - label: meeting
   - type: input
     attributes:
       label: Knowledge level
