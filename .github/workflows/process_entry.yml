@@ -20,33 +20,28 @@ jobs:
       - name: Append to CSV
         run: |
           FILE="data/data.csv"
-          
-          # Capture JSON from the parser
           JSON_DATA='${{ steps.parse.outputs.jsonString }}'
           
-          # Helper function to find values by exact Label name
-          get_val() {
-            echo "$JSON_DATA" | jq -r ".\"$1\" // \"\"" | sed 's/,/;/g' | tr -d '\r\n'
+          # Fuzzy search to find the 'Title' field regardless of capitalization
+          get_fuzzy_val() {
+            echo "$JSON_DATA" | jq -r "to_entries[] | select(.key | ascii_downcase == \"$1\") | .value" | head -n 1 | sed 's/,/;/g' | tr -d '\r\n'
           }
 
-          # Mapping labels to variables (Case-Sensitive)
-          TITLE=$(get_val "Title")
-          LINK=$(get_val "Link to source")
-          KNOW=$(get_val "Knowledge level")
-          TIME=$(get_val "Time needed")
-          LANG=$(get_val "Language")
-          INFO=$(get_val "Information")
-          
-          ALL_CATS=$(get_val "Categories")
-          ALL_KEYS=$(get_val "Keywords")
+          TITLE=$(get_fuzzy_val "title")
+          LINK=$(get_fuzzy_val "link to source")
+          KNOW=$(get_fuzzy_val "knowledge level")
+          TIME=$(get_fuzzy_val "time needed")
+          LANG=$(get_fuzzy_val "language")
+          INFO=$(get_fuzzy_val "information")
+          ALL_CATS=$(get_fuzzy_val "categories")
+          ALL_KEYS=$(get_fuzzy_val "keywords")
 
-          # Validation check
           if [ -z "$TITLE" ] || [ "$TITLE" == "null" ]; then
-            echo "Error: Field 'Title' not found in form data."
+            echo "Error: Could not find 'Title' in form data."
             exit 1
           fi
 
-          # --- CATEGORY TEXT LOGIC ---
+          # Logic for Categories and Keywords
           [[ "$ALL_CATS" == *"webpage"* ]] && C1="webpage" || C1=""
           [[ "$ALL_CATS" == *"course"* ]] && C2="course" || C2=""
           [[ "$ALL_CATS" == *"video"* ]] && C3="video" || C3=""
@@ -55,7 +50,6 @@ jobs:
           [[ "$ALL_CATS" == *"practical guides"* ]] && C6="practical guides" || C6=""
           [[ "$ALL_CATS" == *"meeting"* ]] && C7="meeting" || C7=""
 
-          # --- KEYWORD YES/EMPTY LOGIC ---
           [[ "$ALL_KEYS" == *"Data Steward Training"* ]] && K1="Yes" || K1=""
           [[ "$ALL_KEYS" == *"open science"* ]] && K2="Yes" || K2=""
           [[ "$ALL_KEYS" == *"data"* ]] && K3="Yes" || K3=""
@@ -71,20 +65,23 @@ jobs:
           [[ "$ALL_KEYS" == *"GAČR"* ]] && K13="Yes" || K13=""
           [[ "$ALL_KEYS" == *"other"* ]] && K14="Yes" || K14=""
 
-          # --- CONSTRUCT CSV ROW ---
           NEW_ROW="$TITLE,$LINK,,,$C1,$C2,$C3,$C4,$C5,$C6,$C7,,,$KNOW,,,$TIME,,,$LANG,,,$K1,$K2,$K3,$K4,$K5,$K6,$K7,$K8,$K9,$K10,$K11,$K12,$K13,$K14,,,,,,,,,,,,,,,,$INFO"
-          
           echo "$NEW_ROW" >> "$FILE"
+          
+          # Export TITLE for use in later steps
+          echo "FINAL_TITLE=$TITLE" >> $GITHUB_ENV
 
-      - name: Commit change
+      - name: Commit and Push
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add data/data.csv
-          git commit -m "New Entry: $TITLE"
+          git commit -m "Add entry: $FINAL_TITLE"
           git push
 
-      - name: Close Issue
-        run: gh issue close ${{ github.event.issue.number }} --comment "Successfully added to data/data.csv."
+      - name: Rename and Close Issue
+        run: |
+          gh issue edit ${{ github.event.issue.number }} --title "[Data Entry]: $FINAL_TITLE"
+          gh issue close ${{ github.event.issue.number }} --comment "Resource added to database and issue renamed."
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
