@@ -38,19 +38,21 @@ body:
         - label: beginner
         - label: intermediate
         - label: advanced
-  - type: checkboxes
-    id: time
+  - type: dropdown
+    id: time_duration
     attributes:
-      label: Time needed
-      description: Select one or more options.
+      label: Time needed (Duration)
+      description: How long does this resource take?
       options:
-        - label: few hours
-        - label: one day
-        - label: few days
-        - label: one week
-        - label: few weeks
-        - label: one month
-        - label: few months
+        - "few hours"
+        - "few days"
+        - "few weeks"
+        - "few months"
+  - type: checkboxes
+    id: is_self_paced
+    attributes:
+      label: Format
+      options:
         - label: self-paced
   - type: checkboxes
     id: language
