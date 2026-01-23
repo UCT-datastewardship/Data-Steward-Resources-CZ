@@ -1,20 +1,20 @@
 name: 📝 Add New Entry to Database
-description: Fill out this form to add a new resource to the data/data.csv file.
+description: Use this form to add a row to data/data.csv
 title: "[Data Entry]: "
 labels: ["data-entry"]
 body:
   - type: input
-    id: title
+    id: input_title
     attributes:
       label: Title
     validations:
       required: true
   - type: input
-    id: link
+    id: input_link
     attributes:
       label: Link to source
   - type: checkboxes
-    id: categories
+    id: input_categories
     attributes:
       label: Categories (Select all that apply)
       options:
@@ -26,21 +26,21 @@ body:
         - label: practical guides
         - label: meeting
   - type: input
-    id: knowledge_level
+    id: input_knowledge
     attributes:
       label: Knowledge level
   - type: input
-    id: time_needed
+    id: input_time
     attributes:
       label: Time needed
   - type: input
-    id: language
+    id: input_language
     attributes:
       label: Language
   - type: checkboxes
-    id: keywords
+    id: input_keywords
     attributes:
-      label: Keywords / Funding Agency (Select all that apply)
+      label: Keywords / Funding Agency
       options:
         - label: Data Steward Training
         - label: open science
@@ -57,6 +57,6 @@ body:
         - label: GAČR
         - label: other
   - type: textarea
-    id: information
+    id: input_info
     attributes:
       label: Information
