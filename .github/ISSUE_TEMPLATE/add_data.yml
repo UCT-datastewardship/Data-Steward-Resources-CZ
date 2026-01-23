@@ -1,13 +1,13 @@
 name: 📝 Add New Entry to Database
 description: Use this form to add a row to data/data.csv
-title: " Data Entry " # This pre-fills the box with just " Data Entry "
+title: " Data Entry "
 labels: ["data-entry"]
 body:
   - type: markdown
     attributes:
       value: |
-        ### ⚠️ Note for "Add a title" above:
-        Please do not change the **" Data Entry "** text in the title box.
+        ### ℹ️ Add a title* (do not change the Data Entry)
+        Please leave the pre-filled text " Data Entry " in the box above.
   - type: markdown
     attributes:
       value: "### 📝 Resource Details"
@@ -15,11 +15,77 @@ body:
     id: title
     attributes:
       label: Title
-      placeholder: "e.g., Data Management Plan Template"
     validations:
       required: true
   - type: input
     id: link
     attributes:
       label: Link to source
-# ... (rest of your fields: categories, knowledge_level, duration_choice, etc.)
+  - type: checkboxes
+    id: categories
+    attributes:
+      label: Categories
+      options:
+        - label: webpage
+        - label: course
+        - label: video
+        - label: article
+        - label: document
+        - label: practical guides
+        - label: meeting
+  - type: checkboxes
+    id: knowledge_level
+    attributes:
+      label: Knowledge level
+      options:
+        - label: any level
+        - label: beginner
+        - label: intermediate
+        - label: advanced
+  - type: dropdown
+    id: duration_choice
+    attributes:
+      label: Time needed (Duration)
+      options:
+        - "few hours"
+        - "few days"
+        - "few weeks"
+        - "few months"
+  - type: checkboxes
+    id: self_paced_choice
+    attributes:
+      label: Format
+      options:
+        - label: self-paced
+  - type: checkboxes
+    id: language_choice
+    attributes:
+      label: Language
+      options:
+        - label: EN
+        - label: CZ
+        - label: DE
+        - label: FR
+  - type: checkboxes
+    id: keywords
+    attributes:
+      label: Keywords
+      options:
+        - label: Data Steward Training
+        - label: open science
+        - label: data
+        - label: database
+        - label: repositories
+        - label: licensing
+        - label: good practices
+        - label: bad practices
+        - label: RDM
+        - label: DMP
+        - label: FAIR
+        - label: HE
+        - label: GAČR
+        - label: other
+  - type: textarea
+    id: information
+    attributes:
+      label: Information
