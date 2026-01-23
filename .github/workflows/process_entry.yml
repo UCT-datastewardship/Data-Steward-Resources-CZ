@@ -21,7 +21,7 @@ jobs:
         run: |
           FILE="data/data.csv"
           
-          # We use the specific IDs from the template
+          # Use the specific IDs defined in the template body
           TITLE=$(echo "${{ steps.parse.outputs.title_field }}" | sed 's/,/;/g' | tr -d '\r\n')
           LINK=$(echo "${{ steps.parse.outputs.link_field }}" | sed 's/,/;/g' | tr -d '\r\n')
           KNOW=$(echo "${{ steps.parse.outputs.know_field }}" | sed 's/,/;/g' | tr -d '\r\n')
@@ -29,12 +29,13 @@ jobs:
           LANG=$(echo "${{ steps.parse.outputs.lang_field }}" | sed 's/,/;/g' | tr -d '\r\n')
           INFO=$(echo "${{ steps.parse.outputs.info_field }}" | sed 's/,/;/g' | tr -d '\n')
 
+          # Final safety check
           if [ -z "$TITLE" ]; then
-            echo "Error: Title field was empty."
+            echo "Error: Title field was empty. Parsed Title: $TITLE"
             exit 1
           fi
 
-          # --- CATEGORY LOGIC ---
+          # --- CATEGORY TEXT LOGIC ---
           ALL_CATS="${{ steps.parse.outputs.cat_field }}"
           [[ "$ALL_CATS" == *"webpage"* ]] && C1="webpage" || C1=""
           [[ "$ALL_CATS" == *"course"* ]] && C2="course" || C2=""
@@ -44,7 +45,7 @@ jobs:
           [[ "$ALL_CATS" == *"practical guides"* ]] && C6="practical guides" || C6=""
           [[ "$ALL_CATS" == *"meeting"* ]] && C7="meeting" || C7=""
 
-          # --- KEYWORD YES LOGIC ---
+          # --- KEYWORD "YES" LOGIC ---
           ALL_KEYS="${{ steps.parse.outputs.key_field }}"
           [[ "$ALL_KEYS" == *"Data Steward Training"* ]] && K1="Yes" || K1=""
           [[ "$ALL_KEYS" == *"open science"* ]] && K2="Yes" || K2=""
@@ -71,10 +72,10 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add data/data.csv
-          git commit -m "Add resource: $TITLE"
+          git commit -m "Automated entry: $TITLE"
           git push
 
       - name: Close Issue
-        run: gh issue close ${{ github.event.issue.number }} --comment "Added to CSV!"
+        run: gh issue close ${{ github.event.issue.number }} --comment "Added successfully to the database."
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
