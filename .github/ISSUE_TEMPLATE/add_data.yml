@@ -1,14 +1,13 @@
 name: 📝 Add New Entry to Database
 description: Use this form to add a row to data/data.csv
-title: "NEW ENTRY (Do not edit this line)"
+title: " Data Entry "
 labels: ["data-entry"]
 body:
   - type: markdown
     attributes:
       value: |
         ### 📝 Resource Details
-        **Note:** Please ignore the 'Add a title' box at the very top of this page. 
-        Enter the actual name of your resource in the **Title** field below.
+        **Note:** Please focus on the fields below. The top 'Add a title' field will be automatically updated by the system.
   - type: input
     attributes:
       label: Title
@@ -25,6 +24,9 @@ body:
         - label: course
         - label: video
         - label: article
+        - label: document
+        - label: practical guides
+        - label: meeting
   - type: input
     attributes:
       label: Knowledge level
