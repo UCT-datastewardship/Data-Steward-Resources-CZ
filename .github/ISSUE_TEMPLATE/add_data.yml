@@ -3,56 +3,47 @@ description: Fill out this form to add a new resource to the data/data.csv file.
 title: "[Data Entry]: "
 labels: ["data-entry"]
 body:
-  - type: markdown
-    attributes:
-      value: |
-        ### Core Information
   - type: input
     id: title
     attributes:
       label: Title
-      placeholder: e.g., Data Management Basics
     validations:
       required: true
   - type: input
     id: link
     attributes:
       label: Link to source
-      placeholder: https://...
-
-  - type: dropdown
+  - type: checkboxes
     id: categories
     attributes:
-      label: Categories
+      label: Categories (Select all that apply)
       options:
-        - Data Steward Training
-        - Open Science
-        - Both
-        - Other
-
+        - label: webpage
+        - label: course
+        - label: video
+        - label: article
+        - label: document
+        - label: practical guides
+        - label: meeting
   - type: input
     id: knowledge_level
     attributes:
       label: Knowledge level
-      placeholder: e.g., Beginner
-
   - type: input
     id: time_needed
     attributes:
       label: Time needed
-      placeholder: e.g., 45 mins
-
   - type: input
     id: language
     attributes:
       label: Language
-      placeholder: e.g., English
-
   - type: checkboxes
     id: keywords
     attributes:
-      label: Keywords / Funding Agency
+      label: Keywords / Funding Agency (Select all that apply)
       options:
+        - label: Data Steward Training
+        - label: open science
         - label: data
         - label: database
         - label: repositories
@@ -65,9 +56,7 @@ body:
         - label: HE
         - label: GAČR
         - label: other
-
   - type: textarea
     id: information
     attributes:
       label: Information
-      placeholder: Additional description or notes...
