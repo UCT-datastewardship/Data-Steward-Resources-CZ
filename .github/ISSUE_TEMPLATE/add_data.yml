@@ -29,7 +29,7 @@ body:
         - label: practical guides
         - label: meeting
   - type: checkboxes
-    id: knowledge
+    id: knowledge_level
     attributes:
       label: Knowledge level
       options:
@@ -38,7 +38,7 @@ body:
         - label: intermediate
         - label: advanced
   - type: dropdown
-    id: time_duration
+    id: duration_choice
     attributes:
       label: Time needed (Duration)
       options:
@@ -47,13 +47,13 @@ body:
         - "few weeks"
         - "few months"
   - type: checkboxes
-    id: is_self_paced
+    id: self_paced_choice
     attributes:
       label: Format
       options:
         - label: self-paced
   - type: checkboxes
-    id: language
+    id: language_choice
     attributes:
       label: Language
       options:
