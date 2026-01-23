@@ -5,11 +5,12 @@ on:
 
 jobs:
   add_row:
-    # Ensures it only runs for the data entry template
+    # Only runs if the issue has the data-entry label from the template
     if: contains(github.event.issue.labels.*.name, 'data-entry')
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      issues: write
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -22,7 +23,7 @@ jobs:
         run: |
           FILE="data/data.csv"
           
-          # Clean text fields (protecting commas and removing newlines)
+          # 1. Clean Core Fields (Replacing commas with semicolons for safety)
           TITLE=$(echo "${{ steps.parse.outputs.title }}" | sed 's/,/;/g')
           LINK=$(echo "${{ steps.parse.outputs.link }}" | sed 's/,/;/g')
           KNOW=$(echo "${{ steps.parse.outputs.knowledge_level }}" | sed 's/,/;/g')
@@ -30,8 +31,7 @@ jobs:
           LANG=$(echo "${{ steps.parse.outputs.language }}" | sed 's/,/;/g')
           INFO=$(echo "${{ steps.parse.outputs.information }}" | sed 's/,/;/g' | tr -d '\n')
 
-          # --- CATEGORY TEXT LOGIC ---
-          # Puts the actual name in the cell if selected
+          # 2. CATEGORY TEXT LOGIC (Puts the actual word in the cell)
           ALL_CATS="${{ steps.parse.outputs.categories }}"
           [[ "$ALL_CATS" == *"webpage"* ]] && C1="webpage" || C1=""
           [[ "$ALL_CATS" == *"course"* ]] && C2="course" || C2=""
@@ -41,8 +41,7 @@ jobs:
           [[ "$ALL_CATS" == *"practical guides"* ]] && C6="practical guides" || C6=""
           [[ "$ALL_CATS" == *"meeting"* ]] && C7="meeting" || C7=""
 
-          # --- KEYWORD "YES" LOGIC ---
-          # Puts 'Yes' in the cell if selected
+          # 3. KEYWORD "YES" LOGIC (Puts 'Yes' in the cell)
           ALL_KEYS="${{ steps.parse.outputs.keywords }}"
           [[ "$ALL_KEYS" == *"Data Steward Training"* ]] && K1="Yes" || K1=""
           [[ "$ALL_KEYS" == *"open science"* ]] && K2="Yes" || K2=""
@@ -59,14 +58,16 @@ jobs:
           [[ "$ALL_KEYS" == *"GAČR"* ]] && K13="Yes" || K13=""
           [[ "$ALL_KEYS" == *"other"* ]] && K14="Yes" || K14=""
 
-          # --- CONSTRUCT THE ROW ---
-          # Aligned to your 2-header layout:
-          # Title, Link, [3 empty], Cat1-7, [2 empty], Know, [2 empty], Time, [2 empty], Lang, [2 empty], K1-14, [2 empty], Info
-          # (Total comma count is kept static to prevent row shifting)
+          # 4. CONSTRUCT THE ROW & PREVENT EMPTY ENTRIES
+          # Alignment: Title, Link, [gap], Cat1-7, [gap], Know, [gap], Time, [gap], Lang, [gap], K1-14, [gap], Info
+          NEW_ROW="$TITLE,$LINK,,,$C1,$C2,$C3,$C4,$C5,$C6,$C7,,,$KNOW,,,$TIME,,,$LANG,,,$K1,$K2,$K3,$K4,$K5,$K6,$K7,$K8,$K9,$K10,$K11,$K12,$K13,$K14,,,,,,,,,,,,,,,,$INFO"
           
-          NEW_ROW="$TITLE,$LINK,,,$C1,$C2,$C3,$C4,$C5,$C6,$C7,,,$KNOW,,,$TIME,,,$LANG,,,$K1,$K2,$K3,$K4,$K5,$K6,$K7,$K8,$K9,$K10,$K11,$K12,$K13,$K14,,$INFO"
-          
-          echo "$NEW_ROW" >> "$FILE"
+          if [ -n "$TITLE" ]; then
+            echo "$NEW_ROW" >> "$FILE"
+          else
+            echo "Error: Title is empty. Skipping CSV update to prevent empty rows."
+            exit 1
+          fi
 
       - name: Commit change
         run: |
@@ -77,6 +78,6 @@ jobs:
           git push
 
       - name: Close Issue
-        run: gh issue close ${{ github.event.issue.number }} --comment "Data successfully added to CSV."
+        run: gh issue close ${{ github.event.issue.number }} --comment "The resource has been successfully formatted and added to the CSV database."
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
