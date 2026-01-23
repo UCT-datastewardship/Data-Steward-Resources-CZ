@@ -1,3 +1,4 @@
+#this script automatically closes an issue from a pull request when it is closed or merged.
 name: Close Issue on PR Action
 on:
   pull_request:
