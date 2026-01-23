@@ -25,27 +25,33 @@ jobs:
           import os
 
           # 1. Load the data
-          issue_data = json.loads('''${{ steps.parse.outputs.jsonString }}''')
+          issue_json = '''${{ steps.parse.outputs.jsonString }}'''
+          issue_data = json.loads(issue_json)
+          
+          # DEBUG: This will show up in your GitHub Actions log if it fails again
+          print("DEBUG - Received Data:", json.dumps(issue_data, indent=2))
+
           file_path = 'data/data.csv'
 
-          # 2. Extract values - Matching the IDs in the YAML exactly
-          title = issue_data.get("title", "").replace(",", ";")
-          link = issue_data.get("link", "").replace(",", ";")
+          # 2. Extract values with updated IDs
+          title = issue_data.get("title", "").strip()
+          link = issue_data.get("link", "").strip()
           cats = issue_data.get("categories", [])
-          knows = issue_data.get("knowledge", [])
-          duration = issue_data.get("time_duration", "")
-          pace_list = issue_data.get("is_self_paced", [])
-          langs = issue_data.get("language", [])
+          knows = issue_data.get("knowledge_level", [])
+          duration = issue_data.get("duration_choice", "")
+          pace_list = issue_data.get("self_paced_choice", [])
+          langs = issue_data.get("language_choice", [])
           keys = issue_data.get("keywords", [])
-          info = issue_data.get("information", "").replace(",", ";")
+          info = issue_data.get("information", "").strip().replace(",", ";")
 
-          if not title or title == "null":
+          if not title or title.lower() == "null":
+              print("Error: Title is empty")
               exit(1)
 
-          # 3. Create blank row of 35 columns
+          # 3. Create blank row (35 columns)
           new_row = [""] * 35
           
-          # 4. Mapping logic
+          # Mapping based on your 20th-column (Index 19) Keywords confirmed
           new_row[0] = title
           new_row[1] = link
           
@@ -57,9 +63,9 @@ jobs:
           for i, val in enumerate(knows[:4]):
               new_row[9+i] = val
 
-          # Time needed: Index 13 (Duration) and Index 14 (Self-paced)
+          # Time: Index 13 (Duration) and Index 14 (Self-paced)
           new_row[13] = duration
-          if pace_list:
+          if "self-paced" in pace_list:
               new_row[14] = "self-paced"
 
           # Language: Indices 15-18
@@ -77,11 +83,12 @@ jobs:
 
           new_row[34] = info
 
-          # 5. Append
+          # 5. Append to CSV
           with open(file_path, mode='a', encoding='utf-8', newline='') as f:
               writer = csv.writer(f)
               writer.writerow(new_row)
           
+          # Export title for the next steps
           with open(os.environ['GITHUB_ENV'], 'a') as env:
               env.write(f"FINAL_TITLE={title}\n")
 
@@ -96,6 +103,6 @@ jobs:
       - name: Rename and Close Issue
         run: |
           gh issue edit ${{ github.event.issue.number }} --title "[Data Entry]: $FINAL_TITLE"
-          gh issue close ${{ github.event.issue.number }} --comment "Added successfully."
+          gh issue close ${{ github.event.issue.number }} --comment "Added successfully to the 35-column database."
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
