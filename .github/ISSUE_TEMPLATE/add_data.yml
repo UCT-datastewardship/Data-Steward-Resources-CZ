@@ -28,18 +28,35 @@ body:
         - label: document
         - label: practical guides
         - label: meeting
-  - type: input
+  - type: dropdown
     id: knowledge
     attributes:
       label: Knowledge level
-  - type: input
+      options:
+        - "any level"
+        - "beginner"
+        - "intermediate"
+        - "advanced"
+  - type: dropdown
     id: time
     attributes:
       label: Time needed
-  - type: input
+      options:
+        - "few hours"
+        - "few days"
+        - "few weeks"
+        - "few months"
+        - "self-paced"
+  - type: checkboxes
     id: language
     attributes:
       label: Language
+      description: Select one or more languages if applicable.
+      options:
+        - label: EN
+        - label: CZ
+        - label: DE
+        - label: FR
   - type: checkboxes
     id: keywords
     attributes:
