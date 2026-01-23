@@ -45,8 +45,11 @@ body:
       description: Select one or more options.
       options:
         - label: few hours
+        - label: one day
         - label: few days
+        - label: one week
         - label: few weeks
+        - label: one month
         - label: few months
         - label: self-paced
   - type: checkboxes
