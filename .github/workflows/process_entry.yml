@@ -5,7 +5,6 @@ on:
 
 jobs:
   add_row:
-    # REMOVED the "if: contains..." line so it always runs
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -13,7 +12,6 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
-      
 
       - name: Parse Issue Form
         id: parse
@@ -23,16 +21,22 @@ jobs:
         run: |
           FILE="data/data.csv"
           
-          # 1. Clean Core Fields (Replacing commas with semicolons for safety)
-          TITLE=$(echo "${{ steps.parse.outputs.title }}" | sed 's/,/;/g')
-          LINK=$(echo "${{ steps.parse.outputs.link }}" | sed 's/,/;/g')
-          KNOW=$(echo "${{ steps.parse.outputs.knowledge_level }}" | sed 's/,/;/g')
-          TIME=$(echo "${{ steps.parse.outputs.time_needed }}" | sed 's/,/;/g')
-          LANG=$(echo "${{ steps.parse.outputs.language }}" | sed 's/,/;/g')
-          INFO=$(echo "${{ steps.parse.outputs.information }}" | sed 's/,/;/g' | tr -d '\n')
+          # Capture and clean inputs based on the IDs in the template
+          TITLE=$(echo "${{ steps.parse.outputs.input_title }}" | sed 's/,/;/g' | tr -d '\r\n')
+          LINK=$(echo "${{ steps.parse.outputs.input_link }}" | sed 's/,/;/g' | tr -d '\r\n')
+          KNOW=$(echo "${{ steps.parse.outputs.input_knowledge }}" | sed 's/,/;/g' | tr -d '\r\n')
+          TIME=$(echo "${{ steps.parse.outputs.input_time }}" | sed 's/,/;/g' | tr -d '\r\n')
+          LANG=$(echo "${{ steps.parse.outputs.input_language }}" | sed 's/,/;/g' | tr -d '\r\n')
+          INFO=$(echo "${{ steps.parse.outputs.input_info }}" | sed 's/,/;/g' | tr -d '\n')
 
-          # 2. CATEGORY TEXT LOGIC (Puts the actual word in the cell)
-          ALL_CATS="${{ steps.parse.outputs.categories }}"
+          # Safety check: Stop if Title is missing
+          if [ -z "$TITLE" ]; then
+            echo "Error: Title is empty. Check if the Issue Template IDs match the script."
+            exit 1
+          fi
+
+          # --- CATEGORY TEXT LOGIC ---
+          ALL_CATS="${{ steps.parse.outputs.input_categories }}"
           [[ "$ALL_CATS" == *"webpage"* ]] && C1="webpage" || C1=""
           [[ "$ALL_CATS" == *"course"* ]] && C2="course" || C2=""
           [[ "$ALL_CATS" == *"video"* ]] && C3="video" || C3=""
@@ -41,8 +45,8 @@ jobs:
           [[ "$ALL_CATS" == *"practical guides"* ]] && C6="practical guides" || C6=""
           [[ "$ALL_CATS" == *"meeting"* ]] && C7="meeting" || C7=""
 
-          # 3. KEYWORD "YES" LOGIC (Puts 'Yes' in the cell)
-          ALL_KEYS="${{ steps.parse.outputs.keywords }}"
+          # --- KEYWORD YES LOGIC ---
+          ALL_KEYS="${{ steps.parse.outputs.input_keywords }}"
           [[ "$ALL_KEYS" == *"Data Steward Training"* ]] && K1="Yes" || K1=""
           [[ "$ALL_KEYS" == *"open science"* ]] && K2="Yes" || K2=""
           [[ "$ALL_KEYS" == *"data"* ]] && K3="Yes" || K3=""
@@ -58,26 +62,20 @@ jobs:
           [[ "$ALL_KEYS" == *"GAČR"* ]] && K13="Yes" || K13=""
           [[ "$ALL_KEYS" == *"other"* ]] && K14="Yes" || K14=""
 
-          # 4. CONSTRUCT THE ROW & PREVENT EMPTY ENTRIES
-          # Alignment: Title, Link, [gap], Cat1-7, [gap], Know, [gap], Time, [gap], Lang, [gap], K1-14, [gap], Info
+          # --- CONSTRUCT THE ROW ---
           NEW_ROW="$TITLE,$LINK,,,$C1,$C2,$C3,$C4,$C5,$C6,$C7,,,$KNOW,,,$TIME,,,$LANG,,,$K1,$K2,$K3,$K4,$K5,$K6,$K7,$K8,$K9,$K10,$K11,$K12,$K13,$K14,,,,,,,,,,,,,,,,$INFO"
           
-          if [ -n "$TITLE" ]; then
-            echo "$NEW_ROW" >> "$FILE"
-          else
-            echo "Error: Title is empty. Skipping CSV update to prevent empty rows."
-            exit 1
-          fi
+          echo "$NEW_ROW" >> "$FILE"
 
-      - name: Commit change
+      - name: Commit and Push
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add data/data.csv
-          git commit -m "Add row: ${{ steps.parse.outputs.title }}"
+          git commit -m "Automated data entry: ${{ steps.parse.outputs.input_title }}"
           git push
 
       - name: Close Issue
-        run: gh issue close ${{ github.event.issue.number }} --comment "The resource has been successfully formatted and added to the CSV database."
+        run: gh issue close ${{ github.event.issue.number }} --comment "Data successfully added to data/data.csv."
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
