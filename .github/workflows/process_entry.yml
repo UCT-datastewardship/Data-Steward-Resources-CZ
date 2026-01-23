@@ -21,14 +21,15 @@ jobs:
         run: |
           FILE="data/data.csv"
           
-          # Using JSON parsing to be 100% sure we get the data regardless of IDs
-          # This pulls by the LABEL name instead of the ID
+          # Capture JSON from the parser
           JSON_DATA='${{ steps.parse.outputs.jsonString }}'
           
+          # Helper function to find values by exact Label name
           get_val() {
             echo "$JSON_DATA" | jq -r ".\"$1\" // \"\"" | sed 's/,/;/g' | tr -d '\r\n'
           }
 
+          # Mapping labels to variables (Case-Sensitive)
           TITLE=$(get_val "Title")
           LINK=$(get_val "Link to source")
           KNOW=$(get_val "Knowledge level")
@@ -39,14 +40,13 @@ jobs:
           ALL_CATS=$(get_val "Categories")
           ALL_KEYS=$(get_val "Keywords")
 
-          # Safety check
+          # Validation check
           if [ -z "$TITLE" ] || [ "$TITLE" == "null" ]; then
-            echo "Error: Title not found in form data."
-            echo "Debug JSON: $JSON_DATA"
+            echo "Error: Field 'Title' not found in form data."
             exit 1
           fi
 
-          # --- CATEGORY LOGIC ---
+          # --- CATEGORY TEXT LOGIC ---
           [[ "$ALL_CATS" == *"webpage"* ]] && C1="webpage" || C1=""
           [[ "$ALL_CATS" == *"course"* ]] && C2="course" || C2=""
           [[ "$ALL_CATS" == *"video"* ]] && C3="video" || C3=""
@@ -55,7 +55,7 @@ jobs:
           [[ "$ALL_CATS" == *"practical guides"* ]] && C6="practical guides" || C6=""
           [[ "$ALL_CATS" == *"meeting"* ]] && C7="meeting" || C7=""
 
-          # --- KEYWORD LOGIC ---
+          # --- KEYWORD YES/EMPTY LOGIC ---
           [[ "$ALL_KEYS" == *"Data Steward Training"* ]] && K1="Yes" || K1=""
           [[ "$ALL_KEYS" == *"open science"* ]] && K2="Yes" || K2=""
           [[ "$ALL_KEYS" == *"data"* ]] && K3="Yes" || K3=""
@@ -71,6 +71,7 @@ jobs:
           [[ "$ALL_KEYS" == *"GAČR"* ]] && K13="Yes" || K13=""
           [[ "$ALL_KEYS" == *"other"* ]] && K14="Yes" || K14=""
 
+          # --- CONSTRUCT CSV ROW ---
           NEW_ROW="$TITLE,$LINK,,,$C1,$C2,$C3,$C4,$C5,$C6,$C7,,,$KNOW,,,$TIME,,,$LANG,,,$K1,$K2,$K3,$K4,$K5,$K6,$K7,$K8,$K9,$K10,$K11,$K12,$K13,$K14,,,,,,,,,,,,,,,,$INFO"
           
           echo "$NEW_ROW" >> "$FILE"
@@ -80,10 +81,10 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add data/data.csv
-          git commit -m "Add entry via form"
+          git commit -m "New Entry: $TITLE"
           git push
 
       - name: Close Issue
-        run: gh issue close ${{ github.event.issue.number }} --comment "Resource added!"
+        run: gh issue close ${{ github.event.issue.number }} --comment "Successfully added to data/data.csv."
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
