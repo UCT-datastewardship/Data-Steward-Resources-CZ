@@ -5,36 +5,36 @@ on:
 
 jobs:
   cleanup_issue:
-    # This ensures it only runs for PRs created by your other workflow
+    # Only run for branches created by our data-entry action
     if: startsWith(github.event.pull_request.head.ref, 'entry-')
     runs-on: ubuntu-latest
     permissions:
       issues: write
       pull-requests: read
-      contents: read
     steps:
       - name: Extract Issue Number
         id: info
         run: |
-          # Extract number from branch 'entry-123'
-          BRANCH="${{ github.event.pull_request.head.ref }}"
-          ISSUE_NUM=$(echo $BRANCH | sed 's/entry-//')
+          # Grabs only the digits from the branch name 'entry-123'
+          ISSUE_NUM=$(echo "${{ github.event.pull_request.head.ref }}" | sed 's/[^0-9]*//g')
           echo "num=$ISSUE_NUM" >> $GITHUB_OUTPUT
+          echo "Targeting Issue: $ISSUE_NUM"
 
       - name: Handle Merged Entry
         if: github.event.pull_request.merged == true
         run: |
-          gh issue comment ${{ steps.info.outputs.num }} --body "✅ **Entry Completed!** The resource has been added to the database."
-          gh issue edit ${{ steps.info.outputs.num }} --title "[Completed]: ${{ github.event.pull_request.title }}"
-          gh issue close ${{ steps.info.outputs.num }}
+          # We use the --repo flag to ensure the CLI knows exactly where to look
+          gh issue comment ${{ steps.info.outputs.num }} --repo ${{ github.repository }} --body "✅ **Entry Completed!** The resource has been added to the database."
+          gh issue edit ${{ steps.info.outputs.num }} --repo ${{ github.repository }} --title "[Completed]: ${{ github.event.pull_request.title }}"
+          gh issue close ${{ steps.info.outputs.num }} --repo ${{ github.repository }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Handle Rejected Entry
         if: github.event.pull_request.merged == false
         run: |
-          gh issue comment ${{ steps.info.outputs.num }} --body "❌ **Entry Not Added.** This request was closed without merging."
-          gh issue edit ${{ steps.info.outputs.num }} --title "[Rejected]: ${{ github.event.pull_request.title }}"
-          gh issue close ${{ steps.info.outputs.num }} --reason "not planned"
+          gh issue comment ${{ steps.info.outputs.num }} --repo ${{ github.repository }} --body "❌ **Entry Not Added.** This request was closed without merging."
+          gh issue edit ${{ steps.info.outputs.num }} --repo ${{ github.repository }} --title "[Rejected]: ${{ github.event.pull_request.title }}"
+          gh issue close ${{ steps.info.outputs.num }} --repo ${{ github.repository }} --reason "not planned"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
