@@ -5,19 +5,19 @@ labels: ["data-entry"]
 body:
   - type: markdown
     attributes:
-      value: |
-        ### 📝 Resource Details
-        **Note:** Please ignore the 'Add a title' box at the very top. 
-        Enter the name of your resource in the **Title** field below.
+      value: "### 📝 Resource Details\nPlease fill in the fields below. The system will automatically update the issue title once submitted."
   - type: input
+    id: title
     attributes:
       label: Title
     validations:
       required: true
   - type: input
+    id: link
     attributes:
       label: Link to source
   - type: checkboxes
+    id: categories
     attributes:
       label: Categories
       options:
@@ -29,15 +29,19 @@ body:
         - label: practical guides
         - label: meeting
   - type: input
+    id: knowledge
     attributes:
       label: Knowledge level
   - type: input
+    id: time
     attributes:
       label: Time needed
   - type: input
+    id: language
     attributes:
       label: Language
   - type: checkboxes
+    id: keywords
     attributes:
       label: Keywords
       options:
@@ -56,5 +60,6 @@ body:
         - label: GAČR
         - label: other
   - type: textarea
+    id: information
     attributes:
       label: Information
