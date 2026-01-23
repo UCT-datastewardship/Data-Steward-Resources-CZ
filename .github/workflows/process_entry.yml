@@ -5,8 +5,8 @@ on:
 
 jobs:
   add_row:
-    # Only runs if the issue was created using your specific template
-    if: github.event.issue.title != '' 
+    # Ensures it only runs for the data entry template
+    if: contains(github.event.issue.labels.*.name, 'data-entry')
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -20,34 +20,63 @@ jobs:
 
       - name: Append to CSV
         run: |
-          # 1. Path to your file
           FILE="data/data.csv"
-
-          # 2. Capture and Clean Form Data
-          # We use 'sed' to ensure no commas inside the text break the CSV columns
+          
+          # Clean text fields (protecting commas and removing newlines)
           TITLE=$(echo "${{ steps.parse.outputs.title }}" | sed 's/,/;/g')
           LINK=$(echo "${{ steps.parse.outputs.link }}" | sed 's/,/;/g')
-          CAT=$(echo "${{ steps.parse.outputs.categories }}" | tr '\n' ' ' | sed 's/,/;/g')
           KNOW=$(echo "${{ steps.parse.outputs.knowledge_level }}" | sed 's/,/;/g')
           TIME=$(echo "${{ steps.parse.outputs.time_needed }}" | sed 's/,/;/g')
           LANG=$(echo "${{ steps.parse.outputs.language }}" | sed 's/,/;/g')
-          KEYS=$(echo "${{ steps.parse.outputs.keywords }}" | tr '\n' ' ' | sed 's/,/;/g')
-          INFO=$(echo "${{ steps.parse.outputs.information }}" | tr '\n' ' ' | sed 's/,/;/g')
+          INFO=$(echo "${{ steps.parse.outputs.information }}" | sed 's/,/;/g' | tr -d '\n')
 
-          # 3. THE EXACT COMMA MAP
-          # Header 1 has Title, Link, [gap], Categories...
-          # Header 2 has 19 leading commas before the sub-headers start.
-          # We use 18 commas after Link to align with the 20th column.
+          # --- CATEGORY TEXT LOGIC ---
+          # Puts the actual name in the cell if selected
+          ALL_CATS="${{ steps.parse.outputs.categories }}"
+          [[ "$ALL_CATS" == *"webpage"* ]] && C1="webpage" || C1=""
+          [[ "$ALL_CATS" == *"course"* ]] && C2="course" || C2=""
+          [[ "$ALL_CATS" == *"video"* ]] && C3="video" || C3=""
+          [[ "$ALL_CATS" == *"article"* ]] && C4="article" || C4=""
+          [[ "$ALL_CATS" == *"document"* ]] && C5="document" || C5=""
+          [[ "$ALL_CATS" == *"practical guides"* ]] && C6="practical guides" || C6=""
+          [[ "$ALL_CATS" == *"meeting"* ]] && C7="meeting" || C7=""
+
+          # --- KEYWORD "YES" LOGIC ---
+          # Puts 'Yes' in the cell if selected
+          ALL_KEYS="${{ steps.parse.outputs.keywords }}"
+          [[ "$ALL_KEYS" == *"Data Steward Training"* ]] && K1="Yes" || K1=""
+          [[ "$ALL_KEYS" == *"open science"* ]] && K2="Yes" || K2=""
+          [[ "$ALL_KEYS" == *"data"* ]] && K3="Yes" || K3=""
+          [[ "$ALL_KEYS" == *"database"* ]] && K4="Yes" || K4=""
+          [[ "$ALL_KEYS" == *"repositories"* ]] && K5="Yes" || K5=""
+          [[ "$ALL_KEYS" == *"licensing"* ]] && K6="Yes" || K6=""
+          [[ "$ALL_KEYS" == *"good practices"* ]] && K7="Yes" || K7=""
+          [[ "$ALL_KEYS" == *"bad practices"* ]] && K8="Yes" || K8=""
+          [[ "$ALL_KEYS" == *"RDM"* ]] && K9="Yes" || K9=""
+          [[ "$ALL_KEYS" == *"DMP"* ]] && K10="Yes" || K10=""
+          [[ "$ALL_KEYS" == *"FAIR"* ]] && K11="Yes" || K11=""
+          [[ "$ALL_KEYS" == *"HE"* ]] && K12="Yes" || K12=""
+          [[ "$ALL_KEYS" == *"GAČR"* ]] && K13="Yes" || K13=""
+          [[ "$ALL_KEYS" == *"other"* ]] && K14="Yes" || K14=""
+
+          # --- CONSTRUCT THE ROW ---
+          # Aligned to your 2-header layout:
+          # Title, Link, [3 empty], Cat1-7, [2 empty], Know, [2 empty], Time, [2 empty], Lang, [2 empty], K1-14, [2 empty], Info
+          # (Total comma count is kept static to prevent row shifting)
           
-          NEW_ROW="$TITLE,$LINK,,,,,,,,,,,,,,,,,,$CAT,$KNOW,$TIME,$LANG,$KEYS,,,,,,,,,,,,,,,$INFO"
+          NEW_ROW="$TITLE,$LINK,,,$C1,$C2,$C3,$C4,$C5,$C6,$C7,,,$KNOW,,,$TIME,,,$LANG,,,$K1,$K2,$K3,$K4,$K5,$K6,$K7,$K8,$K9,$K10,$K11,$K12,$K13,$K14,,$INFO"
           
-          # 4. Append to the real file
           echo "$NEW_ROW" >> "$FILE"
 
-      - name: Commit and Push
+      - name: Commit change
         run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
           git add data/data.csv
-          git commit -m "Add new entry: ${{ steps.parse.outputs.title }}"
+          git commit -m "Add row: ${{ steps.parse.outputs.title }}"
           git push
+
+      - name: Close Issue
+        run: gh issue close ${{ github.event.issue.number }} --comment "Data successfully added to CSV."
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
