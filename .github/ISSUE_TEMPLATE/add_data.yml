@@ -1,6 +1,6 @@
 name: 📝 Add New Entry to Database
 description: Use this form to add a row to data/data.csv
-title: ""  # Now empty so users aren't confused
+title: " [Data Entry] "  
 labels: ["data-entry"]
 body:
   - type: markdown
