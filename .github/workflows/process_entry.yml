@@ -22,6 +22,7 @@ jobs:
           FILE="data/data.csv"
           JSON_DATA='${{ steps.parse.outputs.jsonString }}'
           
+          # Case-insensitive extraction
           get_fuzzy_val() {
             echo "$JSON_DATA" | jq -r "to_entries[] | select(.key | ascii_downcase == \"$1\") | .value" | head -n 1 | sed 's/,/;/g' | tr -d '\r\n'
           }
@@ -39,7 +40,7 @@ jobs:
             exit 1
           fi
 
-          # Categories
+          # Categories (Name in cell)
           [[ "$ALL_CATS" == *"webpage"* ]] && C1="webpage" || C1=""
           [[ "$ALL_CATS" == *"course"* ]] && C2="course" || C2=""
           [[ "$ALL_CATS" == *"video"* ]] && C3="video" || C3=""
@@ -48,7 +49,7 @@ jobs:
           [[ "$ALL_CATS" == *"practical guides"* ]] && C6="practical guides" || C6=""
           [[ "$ALL_CATS" == *"meeting"* ]] && C7="meeting" || C7=""
 
-          # Keywords
+          # Keywords (Yes in cell)
           [[ "$ALL_KEYS" == *"Data Steward Training"* ]] && K1="Yes" || K1=""
           [[ "$ALL_KEYS" == *"open science"* ]] && K2="Yes" || K2=""
           [[ "$ALL_KEYS" == *"data"* ]] && K3="Yes" || K3=""
@@ -64,7 +65,8 @@ jobs:
           [[ "$ALL_KEYS" == *"GAČR"* ]] && K13="Yes" || K13=""
           [[ "$ALL_KEYS" == *"other"* ]] && K14="Yes" || K14=""
 
-          # PRECISE COMMA COUNT
+          # --- PRECISE COLUMN ALIGNMENT ---
+          # Title,Link,,,,C1,C2,C3,C4,C5,C6,C7,,,,Know,,,,Time,,,,Lang,,,,K1...K14,,Info
           NEW_ROW="$TITLE,$LINK,,,,$C1,$C2,$C3,$C4,$C5,$C6,$C7,,,,$KNOW,,,,$TIME,,,,$LANG,,,,$K1,$K2,$K3,$K4,$K5,$K6,$K7,$K8,$K9,$K10,$K11,$K12,$K13,$K14,,$INFO"
           
           echo "$NEW_ROW" >> "$FILE"
@@ -81,6 +83,6 @@ jobs:
       - name: Rename and Close Issue
         run: |
           gh issue edit ${{ github.event.issue.number }} --title "[Data Entry]: $FINAL_TITLE"
-          gh issue close ${{ github.event.issue.number }} --comment "Resource added successfully."
+          gh issue close ${{ github.event.issue.number }} --comment "Added successfully. Resource: $FINAL_TITLE"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
