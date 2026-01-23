@@ -32,12 +32,12 @@ jobs:
           issue_data = json.loads('''${{ steps.parse.outputs.jsonString }}''')
           file_path = 'data/data.csv'
 
-          # 2. Extract values
+          # 2. Extract values (All multi-selects are now lists)
           title = issue_data.get("title", "").replace(",", ";")
           link = issue_data.get("link", "").replace(",", ";")
-          know = issue_data.get("knowledge", "")
-          time = issue_data.get("time", "")
-          langs = issue_data.get("language", []) # List from checkboxes
+          knows = issue_data.get("knowledge", [])
+          times = issue_data.get("time", [])
+          langs = issue_data.get("language", [])
           cats = issue_data.get("categories", [])
           info = issue_data.get("information", "").replace(",", ";")
           keys = issue_data.get("keywords", [])
@@ -46,34 +46,36 @@ jobs:
               print("Error: Title is empty")
               exit(1)
 
-          # 3. Read existing headers to ensure alignment
+          # 3. Read existing headers
           with open(file_path, mode='r', encoding='utf-8') as f:
               reader = csv.reader(f)
               header1 = next(reader)
               header2 = next(reader)
 
-          # 4. Create blank row of correct length (35 columns)
+          # 4. Create blank row (35 columns)
           new_row = [""] * len(header1)
           
-          # Mapping data to specific column indices
+          # Mapping:
           new_row[0] = title
           new_row[1] = link
           
-          # Categories mapping (columns 4, 5, 6, 7)
+          # Categories (Columns 4-7)
           if "webpage" in cats: new_row[4] = "webpage"
           if "course" in cats: new_row[5] = "course"
           if "video" in cats: new_row[6] = "video"
           if "article" in cats: new_row[7] = "article"
 
-          # Knowledge Level (Column 10)
-          new_row[10] = know
+          # Knowledge Level (Fills Column 10 and 11 if two selected)
+          for i, val in enumerate(knows[:2]):
+              new_row[10+i] = val
 
-          # Time needed (Column 13)
-          new_row[13] = time
+          # Time needed (Fills Column 13 and 14 if two selected)
+          for i, val in enumerate(times[:2]):
+              new_row[13+i] = val
 
-          # Language mapping (Fills Column 16 and 17 if two are selected)
-          for i, l in enumerate(langs[:2]):
-              new_row[16+i] = l
+          # Language (Fills Column 16 and 17 if two selected)
+          for i, val in enumerate(langs[:2]):
+              new_row[16+i] = val
 
           # Keyword mapping (starts at column 19)
           keyword_list = ["Data Steward Training", "open science", "data", "database", "repositories", 
@@ -84,10 +86,9 @@ jobs:
               if kw in keys:
                   new_row[19+i] = "Yes"
 
-          # Information (Last column)
           new_row[-1] = info
 
-          # 5. Append the row
+          # 5. Append
           with open(file_path, mode='a', encoding='utf-8', newline='') as f:
               writer = csv.writer(f)
               writer.writerow(new_row)
