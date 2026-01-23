@@ -21,22 +21,21 @@ jobs:
         run: |
           FILE="data/data.csv"
           
-          # Capture and clean inputs based on the IDs in the template
-          TITLE=$(echo "${{ steps.parse.outputs.input_title }}" | sed 's/,/;/g' | tr -d '\r\n')
-          LINK=$(echo "${{ steps.parse.outputs.input_link }}" | sed 's/,/;/g' | tr -d '\r\n')
-          KNOW=$(echo "${{ steps.parse.outputs.input_knowledge }}" | sed 's/,/;/g' | tr -d '\r\n')
-          TIME=$(echo "${{ steps.parse.outputs.input_time }}" | sed 's/,/;/g' | tr -d '\r\n')
-          LANG=$(echo "${{ steps.parse.outputs.input_language }}" | sed 's/,/;/g' | tr -d '\r\n')
-          INFO=$(echo "${{ steps.parse.outputs.input_info }}" | sed 's/,/;/g' | tr -d '\n')
+          # We use the specific IDs from the template
+          TITLE=$(echo "${{ steps.parse.outputs.title_field }}" | sed 's/,/;/g' | tr -d '\r\n')
+          LINK=$(echo "${{ steps.parse.outputs.link_field }}" | sed 's/,/;/g' | tr -d '\r\n')
+          KNOW=$(echo "${{ steps.parse.outputs.know_field }}" | sed 's/,/;/g' | tr -d '\r\n')
+          TIME=$(echo "${{ steps.parse.outputs.time_field }}" | sed 's/,/;/g' | tr -d '\r\n')
+          LANG=$(echo "${{ steps.parse.outputs.lang_field }}" | sed 's/,/;/g' | tr -d '\r\n')
+          INFO=$(echo "${{ steps.parse.outputs.info_field }}" | sed 's/,/;/g' | tr -d '\n')
 
-          # Safety check: Stop if Title is missing
           if [ -z "$TITLE" ]; then
-            echo "Error: Title is empty. Check if the Issue Template IDs match the script."
+            echo "Error: Title field was empty."
             exit 1
           fi
 
-          # --- CATEGORY TEXT LOGIC ---
-          ALL_CATS="${{ steps.parse.outputs.input_categories }}"
+          # --- CATEGORY LOGIC ---
+          ALL_CATS="${{ steps.parse.outputs.cat_field }}"
           [[ "$ALL_CATS" == *"webpage"* ]] && C1="webpage" || C1=""
           [[ "$ALL_CATS" == *"course"* ]] && C2="course" || C2=""
           [[ "$ALL_CATS" == *"video"* ]] && C3="video" || C3=""
@@ -46,7 +45,7 @@ jobs:
           [[ "$ALL_CATS" == *"meeting"* ]] && C7="meeting" || C7=""
 
           # --- KEYWORD YES LOGIC ---
-          ALL_KEYS="${{ steps.parse.outputs.input_keywords }}"
+          ALL_KEYS="${{ steps.parse.outputs.key_field }}"
           [[ "$ALL_KEYS" == *"Data Steward Training"* ]] && K1="Yes" || K1=""
           [[ "$ALL_KEYS" == *"open science"* ]] && K2="Yes" || K2=""
           [[ "$ALL_KEYS" == *"data"* ]] && K3="Yes" || K3=""
@@ -62,20 +61,20 @@ jobs:
           [[ "$ALL_KEYS" == *"GAČR"* ]] && K13="Yes" || K13=""
           [[ "$ALL_KEYS" == *"other"* ]] && K14="Yes" || K14=""
 
-          # --- CONSTRUCT THE ROW ---
+          # --- CONSTRUCT ROW ---
           NEW_ROW="$TITLE,$LINK,,,$C1,$C2,$C3,$C4,$C5,$C6,$C7,,,$KNOW,,,$TIME,,,$LANG,,,$K1,$K2,$K3,$K4,$K5,$K6,$K7,$K8,$K9,$K10,$K11,$K12,$K13,$K14,,,,,,,,,,,,,,,,$INFO"
           
           echo "$NEW_ROW" >> "$FILE"
 
-      - name: Commit and Push
+      - name: Commit change
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add data/data.csv
-          git commit -m "Automated data entry: ${{ steps.parse.outputs.input_title }}"
+          git commit -m "Add resource: $TITLE"
           git push
 
       - name: Close Issue
-        run: gh issue close ${{ github.event.issue.number }} --comment "Data successfully added to data/data.csv."
+        run: gh issue close ${{ github.event.issue.number }} --comment "Added to CSV!"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
