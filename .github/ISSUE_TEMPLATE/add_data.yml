@@ -5,22 +5,18 @@ labels: ["data-entry"]
 body:
   - type: markdown
     attributes:
-      value: "Please fill in the details below. The top 'Add a title' field is for the Issue name, while the 'Title' field below is for the resource name."
+      value: "### Please fill in the resource details below."
   - type: input
-    id: title_field
     attributes:
       label: Title
-      placeholder: "e.g., Introduction to RDM"
     validations:
       required: true
   - type: input
-    id: link_field
     attributes:
       label: Link to source
   - type: checkboxes
-    id: cat_field
     attributes:
-      label: Categories (Select all that apply)
+      label: Categories
       options:
         - label: webpage
         - label: course
@@ -30,21 +26,17 @@ body:
         - label: practical guides
         - label: meeting
   - type: input
-    id: know_field
     attributes:
       label: Knowledge level
   - type: input
-    id: time_field
     attributes:
       label: Time needed
   - type: input
-    id: lang_field
     attributes:
       label: Language
   - type: checkboxes
-    id: key_field
     attributes:
-      label: Keywords / Funding Agency
+      label: Keywords
       options:
         - label: Data Steward Training
         - label: open science
@@ -61,6 +53,5 @@ body:
         - label: GAČR
         - label: other
   - type: textarea
-    id: info_field
     attributes:
       label: Information
