@@ -9,6 +9,7 @@ jobs:
     permissions:
       contents: write
       issues: write
+      pull-requests: write # Required to create PRs
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -84,17 +85,21 @@ jobs:
           with open(os.environ['GITHUB_ENV'], 'a') as env:
               env.write(f"FINAL_TITLE={title}\n")
 
-      - name: Commit and Push
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add data/data.csv
-          git commit -m "Add entry: $FINAL_TITLE"
-          git push
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "Add entry: ${{ env.FINAL_TITLE }}"
+          title: "Verify Entry: ${{ env.FINAL_TITLE }}"
+          body: |
+            New data entry submitted via Issue #${{ github.event.issue.number }}.
+            Please review the CSV changes below before merging.
+          branch: "entry-${{ github.event.issue.number }}"
+          delete-branch: true
 
-      - name: Rename and Close Issue
+      - name: Update and Comment on Issue
         run: |
-          gh issue edit ${{ github.event.issue.number }} --title "[Data Entry]: $FINAL_TITLE"
-          gh issue close ${{ github.event.issue.number }} --comment "Added successfully."
+          gh issue edit ${{ github.event.issue.number }} --title "[Reviewing]: $FINAL_TITLE"
+          gh issue comment ${{ github.event.issue.number }} --body "A Pull Request has been created for your entry. It will be added to the database once reviewed by an admin."
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
