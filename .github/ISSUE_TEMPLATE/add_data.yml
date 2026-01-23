@@ -1,11 +1,14 @@
 name: 📝 Add New Entry to Database
 description: Use this form to add a row to data/data.csv
-title: "NEW ENTRY (Do not edit this line)" # Generic title to reduce confusion
+title: "NEW ENTRY (Do not edit this line)"
 labels: ["data-entry"]
 body:
   - type: markdown
     attributes:
-      value: "### 📝 Resource Details\nPlease ignore the 'Add a title' box at the very top. Enter the actual name of your resource in the **Title** field below."
+      value: |
+        ### 📝 Resource Details
+        **Note:** Please ignore the 'Add a title' box at the very top of this page. 
+        Enter the actual name of your resource in the **Title** field below.
   - type: input
     attributes:
       label: Title
