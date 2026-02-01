@@ -37,6 +37,5 @@
 |RDM Kit elixir|https://rdmkit.elixir-europe.org/all_training_resources| | |![course](https://img.shields.io/badge/course-22c55e?style=flat)| | | | | |any level| | |self-paced| | |EN| | |Yes| |Yes| | | | | |Yes| | | | | | | |
 |Elixir TeSS materials|https://tess.elixir-europe.org/elearning_materials| | |![webpage](https://img.shields.io/badge/webpage-8250df?style=flat)|![practical guides](https://img.shields.io/badge/practical%20guides-f97316?style=flat)| | | | |any level| | |self-paced| | |EN| | |Yes|Yes|Yes| | | |Yes| |Yes| |Yes| | |Yes| | |
 |Steward's beginner guide|https://www.eosc.cz/komunity/data-stewardi| | |![practical guides](https://img.shields.io/badge/practical%20guides-f97316?style=flat)| | | | | |beginner| | | | | |EN|CZ| |Yes|Yes| | | | |Yes| |Yes| |Yes| | | | | |
-|2| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | |
 
 <!-- AUTO-TABLE:END -->
