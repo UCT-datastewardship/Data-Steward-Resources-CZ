@@ -9,10 +9,10 @@ Available materials for Data Stewards in CZ and internationally.
 <p><em>This list, including its selection and arrangement, is licensed under a Creative Commons Attribution 4.0 International License (CC BY 4.0), as specified in the LICENSE tab.
 
 Important Note on Referenced Works:
-The links and titles listed within this document refer to external sources and works (e.g., articles, books, websites). These external works are not covered by the CC BY license of this list. Their use, copyright, and licensing are governed by the terms specified by their respective original creators and owners. </p></em>
+The links and titles listed within this document refer to external sources and works (e.g., articles, books, websites). These external works are not covered by the CC BY license of this list. Their use, copyright, and licensing are governed by the terms specified by their respective original creators and owners.
 
 Notice on scripts:
-The scripts are given under MIT license which can be found in the LICENSE -- CODE tab. They were created using ChatGPT, Google Gemini and Perplexity.
+The scripts are given under MIT license which can be found in the LICENSE -- CODE tab. They were created using ChatGPT, Google Gemini and Perplexity.</p></em>
 
 ## Contributors
 
