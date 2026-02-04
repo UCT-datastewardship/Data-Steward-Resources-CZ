@@ -1,0 +1,1 @@
+To propose a new addition to the resources table, please go to **Issues** and create a new issue using the template 📝 [**Add New Entry to Database**](https://github.com/UCT-datastewardship/Data-Steward-Resources-CZ/issues/new/choose).
