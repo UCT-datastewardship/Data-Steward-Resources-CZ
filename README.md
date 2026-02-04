@@ -4,15 +4,15 @@ Available materials for Data Stewards in Czechia and internationally.
 <p> The UCT Data Stewardship team is a team of (<i>yes, you guessed it</i>) Data Stewards who are affiliated with the <br><b> University of Chemistry and Technology in Prague </b>.</br> 
 </p>
 
-<strong>The list in a user-friendly modified format is available in resources-table.md</strong>
+<strong>The list in a user-friendly modified format is available in [resources-table.md](https://github.com/UCT-datastewardship/Data-Steward-Resources-CZ/blob/main/resources-table.md)</strong>
 
-<p><em>This list, including its selection and arrangement, is licensed under a Creative Commons Attribution 4.0 International License (CC BY 4.0), as specified in the LICENSE tab.
+<p><em>This list, including its selection and arrangement, is licensed under a Creative Commons Attribution 4.0 International License (CC BY 4.0), as specified in the [LICENSE](https://github.com/UCT-datastewardship/Data-Steward-Resources-CZ/blob/main/License) tab.
 
 Important Note on Referenced Works:
 The links and titles listed within this document refer to external sources and works (e.g., articles, books, websites). These external works are not covered by the CC BY license of this list. Their use, copyright, and licensing are governed by the terms specified by their respective original creators and owners.
 
 Notice on scripts:
-The scripts in this repository are licensed under the MIT License (see LICENSE--CODE). While the code was generated with the assistance of AI (ChatGPT, Google Gemini, and Perplexity), the underlying logic, structural design, and iterative refinement were directed and authored by Georgia Koutentaki.</p></em>
+The scripts in this repository are licensed under the MIT License (see [LICENSE--CODE]((https://github.com/UCT-datastewardship/Data-Steward-Resources-CZ/blob/main/LICENSE--CODE))). While the code was generated with the assistance of AI (ChatGPT, Google Gemini, and Perplexity), the underlying logic, structural design, and iterative refinement were directed and authored by Georgia Koutentaki.</p></em>
 
 ## Contributors
 
