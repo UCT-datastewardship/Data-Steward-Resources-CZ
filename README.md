@@ -6,7 +6,7 @@ Available materials for Data Stewards in Czechia and internationally.
 
 <strong>The list in a user-friendly modified format is available in [resources-table.md](https://github.com/UCT-datastewardship/Data-Steward-Resources-CZ/blob/main/resources-table.md)</strong>
 
-<p><em>This list, including its selection and arrangement, is licensed under a Creative Commons Attribution 4.0 International License (CC BY 4.0), as specified in the [LICENSE](https://github.com/UCT-datastewardship/Data-Steward-Resources-CZ/blob/main/License) tab.
+<p><em>This list, including its selection and arrangement, is licensed under a Creative Commons Attribution 4.0 International License (CC BY 4.0), as specified in the (<a href="https://raw.githubusercontent.com/UCT-datastewardship/Data-Steward-Resources-CZ/main/License">LICENSE</a>) tab.
 
 Important Note on Referenced Works:
 The links and titles listed within this document refer to external sources and works (e.g., articles, books, websites). These external works are not covered by the CC BY license of this list. Their use, copyright, and licensing are governed by the terms specified by their respective original creators and owners.
