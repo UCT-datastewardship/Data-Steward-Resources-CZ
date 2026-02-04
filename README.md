@@ -12,7 +12,7 @@ Important Note on Referenced Works:
 The links and titles listed within this document refer to external sources and works (e.g., articles, books, websites). These external works are not covered by the CC BY license of this list. Their use, copyright, and licensing are governed by the terms specified by their respective original creators and owners.
 
 Notice on scripts:
-The scripts in this repository are licensed under the MIT License (see [LICENSE--CODE]((https://github.com/UCT-datastewardship/Data-Steward-Resources-CZ/blob/main/LICENSE--CODE))). While the code was generated with the assistance of AI (ChatGPT, Google Gemini, and Perplexity), the underlying logic, structural design, and iterative refinement were directed and authored by Georgia Koutentaki.</p></em>
+The scripts in this repository are licensed under the MIT License (see [LICENSE--CODE](https://github.com/UCT-datastewardship/Data-Steward-Resources-CZ/blob/main/LICENSE--CODE)). While the code was generated with the assistance of AI (ChatGPT, Google Gemini, and Perplexity), the underlying logic, structural design, and iterative refinement were directed and authored by Georgia Koutentaki.</p></em>
 
 ## Contributors
 
