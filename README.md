@@ -1,4 +1,4 @@
-# Data-Steward-Resources-CZ
+# Data Steward Resources CZ: A Curated List
 Available materials for Data Stewards in Czechia and internationally. 
 <p>A list created by the <a href="https://www.linkedin.com/company/data-stewardship-uct/">UCT Data Stewardship team (University of Chemistry and Technology in Prague).</p>
 <p> The UCT Data Stewardship team is a team of (<i>yes, you guessed it</i>) Data Stewards who are affiliated with the <br><b> University of Chemistry and Technology in Prague </b>.</br> 
