@@ -24,7 +24,6 @@ The scripts in this repository are licensed under the MIT License (see [LICENSE-
 - ### Jan Vališ, Ing. (VŠCHT, NTK) ORCiD: <a href='https://orcid.org/0000-0003-0349-6868'> 0000-0003-0349-6868
 - ### Hana Thürlová (VŠCHT) . ORCiD: <a href='https://orcid.org/0000-0001-7011-5573'> 0000-0001-7011-5573
 
-============================================================
 ## Suggested Citations
 
 If you use or reference this work, please use the following citations:
