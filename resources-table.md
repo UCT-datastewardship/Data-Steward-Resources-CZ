@@ -1,20 +1,3 @@
-<style>
-  /* Expands the webpage to use the full screen width */
-  .container-lg { 
-    max-width: 98% !important; 
-    margin-left: auto; 
-    margin-right: auto; 
-  }
-
-  /* Makes the table scrollable and prevents it from being cut off */
-  table { 
-    display: block; 
-    overflow-x: auto; 
-    width: 100% !important; 
-  }
-</style>
-
-### [View Full-Page Version (Best for PDF/Excel)](https://uct-datastewardship.github.io/Data-Steward-Resources-CZ/resources-table)
 <!-- AUTO-TABLE:START -->
 
 |**Title**|**Link to source**|**Categories**|**Categories**|**Categories**|**Categories**|**Categories**|**Categories**|**Categories**|**Knowledge level**|**Knowledge level**|**Knowledge level**|**Knowledge level**|**Time needed**|**Time needed**|**Language**|**Language**|**Language**|**Language**|**Keywords**|**Keywords**|**Keywords**|**Keywords**|**Keywords**|**Keywords**|**Keywords**|**Keywords**|**Keywords**|**Keywords**|**Keywords**|**Keywords**|**Keywords**|**Keywords**| |**Information**|
