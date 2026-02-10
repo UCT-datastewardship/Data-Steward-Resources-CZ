@@ -12,7 +12,7 @@ This template provides a structured form to collect all necessary information, a
 * **Review Process:** To ensure all links are functional and information is accurately categorized, all submissions undergo an audit before being accepted and added to the list.
 * **Form Completeness:** Please fill out as many fields in the form as possible; complete entries are much more likely to be approved quickly.
 * **General Inquiries:** For communication, feedback, or other questions, please open a **separate issue** with your query.
-* **! Please make sure to add a full https:// link.
+* **Please make sure to add a full https:// link.**
 ---
 
 ### Contributor Engagement
