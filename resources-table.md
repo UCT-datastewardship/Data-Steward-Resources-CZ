@@ -1,3 +1,7 @@
+# [🖥️ View Table in Full Screen (Best for Printing & Excel)](https://uct-datastewardship.github.io/Data-Steward-Resources-CZ/resources-table)
+
+> **Note:** Use this link to export the data. Press **Ctrl+P** to save as PDF, or **Copy/Paste** the table directly into Excel.
+
 <!-- AUTO-TABLE:START -->
 
 |**Title**|**Link to source**|**Categories**|**Categories**|**Categories**|**Categories**|**Categories**|**Categories**|**Categories**|**Knowledge level**|**Knowledge level**|**Knowledge level**|**Knowledge level**|**Time needed**|**Time needed**|**Language**|**Language**|**Language**|**Language**|**Keywords**|**Keywords**|**Keywords**|**Keywords**|**Keywords**|**Keywords**|**Keywords**|**Keywords**|**Keywords**|**Keywords**|**Keywords**|**Keywords**|**Keywords**|**Keywords**| |**Information**|
