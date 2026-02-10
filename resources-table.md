@@ -1,4 +1,3 @@
-### [View Full Page (Print to PDF / Copy to Excel)](https://docsify-this.net/_/?basePath=https://raw.githubusercontent.com/UCT-datastewardship/Data-Steward-Resources-CZ/main&homepage=resources-table.md)
 <!-- AUTO-TABLE:START -->
 
 |**Title**|**Link to source**|**Categories**|**Categories**|**Categories**|**Categories**|**Categories**|**Categories**|**Categories**|**Knowledge level**|**Knowledge level**|**Knowledge level**|**Knowledge level**|**Time needed**|**Time needed**|**Language**|**Language**|**Language**|**Language**|**Keywords**|**Keywords**|**Keywords**|**Keywords**|**Keywords**|**Keywords**|**Keywords**|**Keywords**|**Keywords**|**Keywords**|**Keywords**|**Keywords**|**Keywords**|**Keywords**| |**Information**|
