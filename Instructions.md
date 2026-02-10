@@ -4,7 +4,7 @@ To propose a new addition to the resources table, please navigate to **Issues** 
 > 📝 [**Add New Entry to Database**](https://github.com/UCT-datastewardship/Data-Steward-Resources-CZ/issues/new/choose)
 
 This template provides a structured form to collect all necessary information, allowing your submission to be processed efficiently.
-
+! Please make sure to add a full https:// link.
 ---
 
 ### Submission Guidelines
