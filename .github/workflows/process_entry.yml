@@ -4,6 +4,9 @@ on:
   issues:
     types: [opened]
 
+permissions:
+  contents: read  # <--- Add this line to ensure the runner can see your code    
+
 jobs:
   add_row:
     runs-on: ubuntu-latest
