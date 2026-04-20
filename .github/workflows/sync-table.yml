@@ -5,10 +5,10 @@ on:
     # 07:00 UTC on the 1st of every month (≈ 08:00/09:00 Europe/Prague depending on DST)
     - cron: "0 7 1 * *"
   workflow_dispatch: {}  # lets you run it manually
-  pull-requests: write  #
-
+  
 permissions:
   contents: write  # allow committing back to the repo
+  pull-requests: write  
 
 jobs:
   build-table:
