@@ -42,5 +42,6 @@
 |Elixir TeSS materials|https://tess.elixir-europe.org/elearning_materials| | |![webpage](https://img.shields.io/badge/webpage-8250df?style=flat)|![practical guides](https://img.shields.io/badge/practical%20guides-f97316?style=flat)| | | | |any level| | |self-paced| | |EN| | |Yes|Yes|Yes| | | |Yes| |Yes| |Yes| | |Yes| | |
 |Steward's beginner guide|https://www.eosc.cz/komunity/data-stewardi| | |![practical guides](https://img.shields.io/badge/practical%20guides-f97316?style=flat)| | | | | |beginner| | | | | |EN|CZ| |Yes|Yes| | | | |Yes| |Yes| |Yes| | | | | |
 |Registry of research data repositories|https://www.re3data.org/|![webpage](https://img.shields.io/badge/webpage-8250df?style=flat)| | | | | | |any level| | | | | | | | | | |Yes|Yes| |Yes| | | | | | | | | | | |
+|Legal Aspects of Research Data in Czechia| |![video](https://img.shields.io/badge/video-eab308?style=flat)| | | | | | |any level|beginner|intermediate|advanced| | | | | | | | | | | |Yes|Yes| | | | | | | | |Short (1 hr) webinar describing the legal aspects of research data (ownership; publication; sharing) in the Czech Republic.|
 
 <!-- AUTO-TABLE:END -->
