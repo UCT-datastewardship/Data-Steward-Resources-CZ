@@ -16,8 +16,7 @@ jobs:
       - name: Check out repo
         uses: actions/checkout@v4
         with:
-          # This tells the action to act as YOU (the Admin)
-          token: ${{ secrets.ADMIN_PAT }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       # (Optional) Quick visibility/debug. Safer version (no sed).
       - name: Show repo layout
